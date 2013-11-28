@@ -1,0 +1,23 @@
+Criação de Arquivo (Executado no seu branch):
+	- Cria o arquivo
+	- git add <arquivo>
+	- git commit -am ....
+
+Push para seu branch(Executado no proprio branch - Apos uma alteração de arquivo ou criação):
+	- git commit -am ....
+	- git push origin <seu branch>
+
+Pull da versão estavel
+	- git pull origin master
+
+Subtituição da versão estavel.
+	FEITO APOS TESTADO E GARANTIDO QUE A VERSAO ESTA ESTAVEL
+	NA DUVIDA, DE PUSH PARA SEU BRANCH E AVISA QUE PODE SER FEITO UM UPDATE, MAS NAO FAÇA.
+	- notifica que a todos que será feito um update da versao estavel
+	- git fetch -all
+	- git merge origin/<branch1> origin/<branch2> ....
+	- git checkout master
+	- git merge <seu branch>
+	- git push -all
+	- git checkout <seu branch>
+
