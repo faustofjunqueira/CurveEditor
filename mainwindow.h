@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QToolButton>
 
 namespace Ui {
 class MainWindow;
@@ -17,7 +18,15 @@ public:
     
 private:
     Ui::MainWindow *ui;
-    void createComponents();
+
+    QToolButton *btnNew,
+    *btnOpen,
+    *btnSave,
+    *btnDrawCurve,
+    *btnZoomIn,
+    *btnZoomOut;
+
+    void SetupComponents();
 };
 
 #endif // MAINWINDOW_H
