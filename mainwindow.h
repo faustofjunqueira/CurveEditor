@@ -18,6 +18,7 @@ public:
     
 private:
     Ui::MainWindow *ui;
+    QImage bufferCanvas;
 
     QToolButton *btnNew,
     *btnOpen,
@@ -25,7 +26,7 @@ private:
     *btnDrawCurve,
     *btnZoomIn,
     *btnZoomOut;
-
+    void interfaceUpdate(void);
     void SetupComponents();
 };
 
