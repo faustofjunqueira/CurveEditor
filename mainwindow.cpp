@@ -15,8 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     btnNew = new QToolButton;
     btnOpen = new QToolButton;
     btnSave = new QToolButton;
-    btnDrawCurve = new QToolButton;
     btnPenConfig = new QToolButton;
+    btnBezier = new QToolButton;
+    btnHermite = new QToolButton;
     canvas = new MyCanvas;
 
     this->SetupComponents();
@@ -33,25 +34,25 @@ void MainWindow::SetupComponents(){
 
     btnNew->setText("Novo");
     btnOpen->setText("Abrir");
-    btnSave->setText("Salvar");    
-    btnDrawCurve->setText("Desenhar Curva");
+    btnSave->setText("Salvar");
     btnPenConfig->setText("Configurar Caneta");
+    btnBezier->setText("Bezier");
+    btnHermite->setText("Hermite");
+
 
     ui->ToolBarMain->addWidget(btnNew);
     ui->ToolBarMain->addWidget(btnOpen);
     ui->ToolBarMain->addWidget(btnSave);
-    ui->ToolBarMain->addSeparator();
-    ui->ToolBarMain->addWidget(btnDrawCurve);
+    ui->ToolBarMain->addSeparator();    
     ui->ToolBarMain->addWidget(btnPenConfig);
     ui->ToolBarMain->addSeparator();
+    ui->ToolBarMain->addWidget(btnBezier);
+    ui->ToolBarMain->addWidget(btnHermite);
     ui->LayoutCanvas->addWidget(canvas);
 
     this->interfaceUpdate();
 }
 
-void MainWindow::interfaceUpdate(void)
-{
-    //canvas->setPixmap(QPixmap::fromImage(bufferCanvas));
+void MainWindow::interfaceUpdate(void){
     update();
 }
-

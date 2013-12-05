@@ -10,6 +10,7 @@ CanvasPointBuffer CANVAS_BUFFER;
 bool CanvasCoreInit(){
     CANVAS_BUFFER.size = CANVAS_SIZE_BUFFER;
     CANVAS_BUFFER.nelem = 0;
+    CANVAS_BUFFER.lastPoint = NULL;
     return true;
 }
 
@@ -18,10 +19,11 @@ Retorna True se foi o ultimo ponto inserido
 Retorna False se nao foi o ultimo ponto
 */
 bool CanvasBufferAddPoint(CanvasPoint p){
+
     if(CANVAS_BUFFER.nelem == CANVAS_BUFFER.size)
         CANVAS_BUFFER.nelem = 0;
-    CANVAS_BUFFER.buffer[CANVAS_BUFFER.nelem].x = p.x;
-    CANVAS_BUFFER.buffer[CANVAS_BUFFER.nelem].x = p.y;
+    CANVAS_BUFFER.buffer[CANVAS_BUFFER.nelem] = p;
+    CANVAS_BUFFER.lastPoint = &CANVAS_BUFFER.buffer[CANVAS_BUFFER.nelem];
     (CANVAS_BUFFER.nelem)++;
     return CANVAS_BUFFER.nelem == CANVAS_BUFFER.size;
 }
@@ -65,3 +67,4 @@ CanvasPointBuffer *getCanvasBuffer(){
 unsigned int CanvasBufferNelem(){
     return CANVAS_BUFFER.nelem;
 }
+

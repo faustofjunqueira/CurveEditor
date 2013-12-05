@@ -15,8 +15,10 @@ public:
 
 private:
     CanvasPoint LastClickedPoint;
-    CanvasPointBuffer *BufferPoints;
     QImage CanvasBufferImage;
+    CanvasPoint *BufferPoints; // pontos que estao no buffer
+
+    void interfaceUpdate(void);
 };
 
 #endif // MYCANVAS_H
