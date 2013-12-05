@@ -110,14 +110,22 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
     return;
 }
 
-void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, double steps){
-    QVector2D p0(pc0), p1(pc1), tag0(T0), tan1(T1), previusPoint(p0), pt;
+void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh, double steps){
+    QVector2D p0(pc0), p1(pc1), tan0(T0), tan1(T1), previusPoint(p0), pt;
+    if(drawMesh){
+        QPen penOrig(painter->pen());
+        QPen penBack(QColor(59,59,59));
+        painter->setPen(penBack);
+        painter->drawLine(pc0,T0);
+        painter->drawLine(pc1,T1);
+        painter->setPen(penOrig);
+    }
     float TTT,TT;
     for(float t = 0; t <= 1.0; t+=steps){
         TTT = t*t*t;
         TT = t*t;
-        //Para suavizer a curva, multiplica-se algum lugar aqui por WG = 0.5, suponho que multiplique por tag0 e tag1
-        pt = p0*(2*TTT -3*TT + 1) + p1*(-2*TTT + 3*TT) + tag0*(TTT -2*TT + t) + tan1*(TTT - TT);
+        //Para suavizer a curva, multiplica-se algum lugar aqui por WG = 0.5, suponho que multiplique por tan0 e tan1
+        pt = p0*(2*TTT -3*TT + 1) + p1*(-2*TTT + 3*TT) + tan0*(TTT -2*TT + t) + tan1*(TTT - TT);
         painter->drawLine(QPoint(previusPoint.x(),previusPoint.y()),QPoint(pt.x(),pt.y()));
         previusPoint = pt;
     }

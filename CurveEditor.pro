@@ -14,11 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     mainwindow.cpp \
-    algorithms.cpp
+    algorithms.cpp \
+    curve.cpp \
+    mycanvas.cpp \
+    canvascore.cpp
 
 HEADERS  += \
     mainwindow.h \
-    algorithms.h
+    algorithms.h \
+    curve.h \
+    mycanvas.h \
+    canvascore.h
 
 FORMS    += \
     mainwindow.ui

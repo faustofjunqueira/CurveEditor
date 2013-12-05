@@ -91,6 +91,6 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
         AlgorithmHermite(&painter,p0,p1,p2,p3);
 
 */
-void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, double steps = 0.05);
+void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh=false, double steps = 0.05);
 
 #endif // ALGORITHMS_H
