@@ -25,8 +25,9 @@ private:
     QToolButton *btnNew,
     *btnOpen,
     *btnSave,
-    *btnDrawCurve,
-    *btnPenConfig;
+    *btnPenConfig,
+    *btnBezier,
+    *btnHermite;
     MyCanvas *canvas;
     QLabel *lbcontrol0,*lbcontrol1,*lbcontrol2,*lbcontrol3;
     QTextEdit *txtcontol0,*txtcontol1,*txtcontol2,*txtcontol3;//91x31

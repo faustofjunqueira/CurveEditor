@@ -1,31 +1,34 @@
-
 #include "curve.h"
 #include "algorithms.h"
 
 Curve::Curve(QPoint p0,QPoint p1,QPoint p2,QPoint p3,char curve,QPen pen)
 {
-    ptcontro0 = p0;
-    ptcontro1 = p1;
-    ptcontro2 = p2;
-    ptcontro3 = p3;
+    ptControl.append(p0);
+    ptControl.append(p1);
+    ptControl.append(p2);
+    ptControl.append(p3);
+    this->pen = pen;
+    this->curve = curve;
+}
+Curve::Curve(char curve,QPen pen){
     this->pen = pen;
     this->curve = curve;
 }
 
 QPoint Curve::getPT0(){
-    return this->ptcontro0;
+    return ptControl[0];
 }
 
 QPoint Curve::getPT1(){
-    return this->ptcontro1;
+    return ptControl[1];
 }
 
 QPoint Curve::getPT2(){
-    return this->ptcontro2;
+    return ptControl[2];
 }
 
 QPoint Curve::getPT3(){
-    return this->ptcontro3;
+    return ptControl[3];
 }
 
 char *Curve::getCurveType(){
@@ -39,28 +42,28 @@ char *Curve::getCurveType(){
 }
 
 void Curve::setPT0(QPoint pt){
-    ptcontro0 = pt;
+    ptControl[0] = pt;
 }
 
 void Curve::setPT1(QPoint pt){
-    ptcontro1 = pt;
+    ptControl[1] = pt;
 }
 
 void Curve::setPT2(QPoint pt){
-    ptcontro2 = pt;
+    ptControl[2] = pt;
 }
 
 void Curve::setPT3(QPoint pt){
-    ptcontro3 = pt;
+    ptControl[3] = pt;
 }
 
 void Curve::draw(QPainter *painter, bool drawMesh){
     QPen penOrig = painter->pen();
     painter->setPen(pen);
     if(curve == HERMITE)
-        AlgorithmHermite(painter,ptcontro0,ptcontro1,ptcontro2,ptcontro3,drawMesh);
+        AlgorithmHermite(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
     else if(curve == BEZIER)
-        AlgorithmBezier(painter,ptcontro0,ptcontro1,ptcontro2,ptcontro3,drawMesh);
+        AlgorithmBezier(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
    painter->setPen(penOrig);
 
 }

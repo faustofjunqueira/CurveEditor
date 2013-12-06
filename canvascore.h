@@ -10,6 +10,7 @@ typedef struct{
 typedef struct{
     unsigned int size;
     CanvasPoint buffer[CANVAS_SIZE_BUFFER];
+    CanvasPoint *lastPoint;
     unsigned int nelem;
 }CanvasPointBuffer;
 
