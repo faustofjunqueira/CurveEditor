@@ -1,5 +1,5 @@
 #include "algorithms.h"
-
+#include "var.h"
 /** ----------PROBLEMA----------- **/
 void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2){
     int slope;
