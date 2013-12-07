@@ -31,14 +31,8 @@ QPoint Curve::getPT3(){
     return ptControl[3];
 }
 
-char *Curve::getCurveType(){
-    if(this->curve == HERMITE)
-        return "HERMITE";
-    else if(curve == BEZIER)
-        return "BEZIER";
-    else
-        return NULL;
-
+char Curve::getCurveType(){
+    return curve;
 }
 
 void Curve::setPT0(QPoint pt){
@@ -57,6 +51,18 @@ void Curve::setPT3(QPoint pt){
     ptControl[3] = pt;
 }
 
+double Curve::distance(QPoint p){
+    double minDistance = distance2Points(ptControl[0],p);
+    double distance;
+    for(int i = 1; i < ptControl.size(); i++){
+        distance = distance2Points(ptControl[i],p);
+        minDistance = distance < minDistance ? distance : minDistance;
+    }
+    return minDistance;
+}
+
+
+
 void Curve::draw(QPainter *painter, bool drawMesh){
     QPen penOrig = painter->pen();
     painter->setPen(pen);
@@ -64,6 +70,47 @@ void Curve::draw(QPainter *painter, bool drawMesh){
         AlgorithmHermite(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
     else if(curve == BEZIER)
         AlgorithmBezier(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
-   painter->setPen(penOrig);
 
+    painter->setPen(penOrig);
+
+}
+
+QPoint *Curve::selectControlPoint(QPoint p){
+    for(int i = 0; i < ptControl.size(); i++){
+        if(p.x() >= ptControl[i].x()-3 && p.x() <= ptControl[i].x()+3 && p.y() >= ptControl[i].y()-3 && p.y() <= ptControl[i].y()+3)
+            return &ptControl[i];
+    }
+    return NULL;
+}
+
+bool Curve::InMoveRect(QPoint p){
+    return InRectMoveOfCurve(p, ptControl[0],ptControl[1],ptControl[2],ptControl[3]);
+}
+
+void Curve::IncrementX(int scalar){
+    ptControl[0].setX(ptControl[0].x()+scalar);
+    ptControl[1].setX(ptControl[1].x()+scalar);
+    ptControl[2].setX(ptControl[2].x()+scalar);
+    ptControl[3].setX(ptControl[3].x()+scalar);
+}
+
+void Curve::IncrementY(int scalar){
+    ptControl[0].setY(ptControl[0].y()+scalar);
+    ptControl[1].setY(ptControl[1].y()+scalar);
+    ptControl[2].setY(ptControl[2].y()+scalar);
+    ptControl[3].setY(ptControl[3].y()+scalar);
+}
+
+void Curve::DecrementX(int scalar){
+    ptControl[0].setX(ptControl[0].x()-scalar);
+    ptControl[1].setX(ptControl[1].x()-scalar);
+    ptControl[2].setX(ptControl[2].x()-scalar);
+    ptControl[3].setX(ptControl[3].x()-scalar);
+}
+
+void Curve::DecrementY(int scalar){
+    ptControl[0].setY(ptControl[0].y()-scalar);
+    ptControl[1].setY(ptControl[1].y()-scalar);
+    ptControl[2].setY(ptControl[2].y()-scalar);
+    ptControl[3].setY(ptControl[3].y()-scalar);
 }

@@ -8,6 +8,9 @@
 #include <QColor>
 #include <QVector2D>
 
+#define resolutionW 1009
+#define resolutionH 579
+
 /**
     Algoritmo de desenho de linha de Bresenham
 
@@ -92,5 +95,40 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
 
 */
 void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh=false, double steps = 0.05);
+
+double distance2Points(QPoint a, QPoint b);
+
+/**
+ * @brief drawRectMove
+ *      Desenha o quadadinho que pode movimentar a Curva
+ * @param painter
+ *      Renderizador
+ * @param p
+ *      ponto do centro do quadrado
+ */
+void drawRectMove(QPainter *painter, QPoint p);
+
+int MiddleX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+int MiddleY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+int MinY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+int MaxY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+int MinX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+int MaxX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3);
+
+/**
+ * @brief DrawRectMoveOfCurve
+ *          desenha o quadradrinho que move a curva
+ * @param pc0
+ * @param pc1
+ * @param pc2
+ * @param pc3
+ * @param W
+ *       resolucao da tela W
+ * @param H
+ *       resolucao da tela H
+ */
+void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W = resolutionW, int H = resolutionH);
+
+bool InRectMoveOfCurve(QPoint P, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W=resolutionW, int H=resolutionH);
 
 #endif // ALGORITHMS_H

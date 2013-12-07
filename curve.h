@@ -1,6 +1,7 @@
 #ifndef CURVE_H
 #define CURVE_H
 
+#define NOCURVE 0
 #define HERMITE 1
 #define BEZIER 2
 
@@ -18,13 +19,20 @@ public:
     QPoint getPT1();
     QPoint getPT2();
     QPoint getPT3();
-    char *getCurveType();
+    char getCurveType();
     void setPT0(QPoint pt);
     void setPT1(QPoint pt);
     void setPT2(QPoint pt);
     void setPT3(QPoint pt);
     void draw(QPainter *painter, bool drawMesh=false);
+    double distance(QPoint p);
+    QPoint *selectControlPoint(QPoint p);
+    bool InMoveRect(QPoint p);
     QList<QPoint> ptControl;
+    void IncrementX(int scalar);
+    void IncrementY(int scalar);
+    void DecrementX(int scalar);
+    void DecrementY(int scalar);
 private:
 
     char curve;

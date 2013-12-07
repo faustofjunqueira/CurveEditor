@@ -1,5 +1,8 @@
+#include "math.h"
 #include "algorithms.h"
-#include "var.h"
+
+QPen penBack(QColor(59,59,59));
+
 /** ----------PROBLEMA----------- **/
 void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2){
     int slope;
@@ -38,14 +41,14 @@ void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2){
 }
 
 void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3, bool drawMesh, unsigned int nsteps){
-    QPen penOrig(painter->pen());
-    QPen penBack(QColor(59,59,59));
+    QPen penOrig(painter->pen());    
 
     if(drawMesh){
         painter->setPen(penBack);
         painter->drawLine(pc0,pc1);
         painter->drawLine(pc2,pc1);
         painter->drawLine(pc2,pc3);
+        DrawRectMoveOfCurve(painter,pc0,pc1,pc2,pc3);
     }
 
     QVector2D p0(pc0), p1(pc1), p2(pc2), p3(pc3);
@@ -70,7 +73,6 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
             p13 = p12 + dd13*i;
             dd03 = (p13 - p02)/nsteps;
             p03 = p02 + dd03*i;
-
 
             painter->drawLine(QPoint(p01.x(),p01.y()),QPoint(p02.x(),p02.y()));
             painter->drawLine(QPoint(p12.x(),p12.y()),QPoint(p23.x(),p23.y()));
@@ -107,14 +109,22 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
         previusPoint03 = p03;
 
     }
+    if(drawMesh){
+        painter->setPen(penBack);
+        painter->drawRect(pc0.x()-3,pc0.y()-3,6,6);
+        painter->drawRect(pc1.x()-3,pc1.y()-3,6,6);
+        painter->drawRect(pc2.x()-3,pc2.y()-3,6,6);
+        painter->drawRect(pc3.x()-3,pc3.y()-3,6,6);
+        painter->setPen(penOrig);
+    }
     return;
 }
 
+// Provavelmente esta errado o Hermite
 void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh, double steps){
     QVector2D p0(pc0), p1(pc1), tan0(T0), tan1(T1), previusPoint(p0), pt;
     if(drawMesh){
         QPen penOrig(painter->pen());
-        QPen penBack(QColor(59,59,59));
         painter->setPen(penBack);
         painter->drawLine(pc0,T0);
         painter->drawLine(pc1,T1);
@@ -130,4 +140,130 @@ void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoi
         previusPoint = pt;
     }
     return;
+}
+
+double distance2Points(QPoint a, QPoint b){
+    return sqrt(
+                (a.x()-b.x())*(a.x()-b.x()) +
+                (a.y()-b.y())*(a.y()-b.y())
+                );
+}
+
+/**
+ * @brief drawRectMove
+ *      Desenha o quadadinho que pode movimentar a Curva
+ * @param painter
+ *      Renderizador
+ * @param p
+ *      ponto do centro do quadrado
+ */
+void drawRectMove(QPainter *painter, QPoint p){
+    painter->drawRect(p.x()-10,p.y()-10,10,10);
+
+    painter->drawLine(p.x()-35,p.y()-5,p.x()+30,p.y()-5);
+    painter->drawLine(p.x()-5,p.y()+25,p.x()-5,p.y()-35);
+
+    painter->drawLine(p.x()-35,p.y()-5,p.x()-30,p.y());
+    painter->drawLine(p.x()-35,p.y()-5,p.x()-30,p.y()-10);
+
+    painter->drawLine(p.x()+30,p.y()-5,p.x()+25,p.y());
+    painter->drawLine(p.x()+30,p.y()-5,p.x()+25,p.y()-10);
+
+    painter->drawLine(p.x()-5,p.y()+25,p.x(),p.y()+20);
+    painter->drawLine(p.x()-5,p.y()+25,p.x()-10,p.y()+20);
+
+    painter->drawLine(p.x()-5,p.y()-35,p.x(),p.y()-30);
+    painter->drawLine(p.x()-5,p.y()-35,p.x()-10,p.y()-30);
+}
+
+int MaxX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int aux = pc0.x();
+    aux = aux > pc1.x() ? aux : pc1.x();
+    aux = aux > pc2.x() ? aux : pc2.x();
+    return aux > pc3.x() ? aux : pc3.x();
+}
+
+int MinX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int aux = pc0.x();
+    aux = aux < pc1.x() ? aux : pc1.x();
+    aux = aux < pc2.x() ? aux : pc2.x();
+    return aux < pc3.x() ? aux : pc3.x();
+}
+
+int MaxY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int aux = pc0.y();
+    aux = aux > pc1.y() ? aux : pc1.y();
+    aux = aux > pc2.y() ? aux : pc2.y();
+    return aux > pc3.y() ? aux : pc3.y();
+}
+
+int MinY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int aux = pc0.y();
+    aux = aux < pc1.y() ? aux : pc1.y();
+    aux = aux < pc2.y() ? aux : pc2.y();
+    return aux < pc3.y() ? aux : pc3.y();
+}
+
+int MiddleX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int minX = MinX(pc0,pc1,pc2,pc3),
+        maxX = MaxX(pc0,pc1,pc2,pc3);
+    return (int)((maxX-minX)/2);
+}
+
+int MiddleY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
+    int minY = MinY(pc0,pc1,pc2,pc3),
+        maxY = MaxY(pc0,pc1,pc2,pc3);
+    return (int)((maxY-minY)/2);
+}
+
+void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W, int H){
+    int maxY = MaxY(pc0,pc1,pc2,pc3),
+        minY = MinY(pc0,pc1,pc2,pc3),
+        minX = MinX(pc0,pc1,pc2,pc3),
+        maxX = MaxX(pc0,pc1,pc2,pc3);
+    if(W > minX){
+        if(H > maxY+15)
+            drawRectMove(painter,QPoint(minX, maxY+30));
+        else if(0 < minY-15)
+            drawRectMove(painter,QPoint(minX, minY-30));
+    }else if(0 > minX){
+        if(H > maxY+15)
+            drawRectMove(painter,QPoint(maxX, maxY+30));
+        else if(0 < minY-15)
+            drawRectMove(painter,QPoint(maxX, minY-30));
+    }else{
+            int midX = MiddleX(pc0,pc1,pc2,pc3),
+                midY = MiddleY(pc0,pc1,pc2,pc3);
+            drawRectMove(painter,QPoint(midX, midY));
+    }
+}
+
+bool InRectMoveOfCurve(QPoint P, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W, int H){
+    int maxY = MaxY(pc0,pc1,pc2,pc3),
+        minY = MinY(pc0,pc1,pc2,pc3),
+        minX = MinX(pc0,pc1,pc2,pc3),
+        maxX = MaxX(pc0,pc1,pc2,pc3);
+    if(W > minX){
+        if(H > maxY+15){
+            if(minX-10 <= P.x() &&  minX >= P.x() && maxY+20 <= P.y() && maxY+30 >= P.y())
+                return true;
+        }else if(0 < minY-15){
+            if(minX-10 <= P.x() &&  minX >= P.x() && minY-40 <= P.y() && minY-30 >= P.y())
+                return true;
+        }
+    }else if(0 > minX){
+        if(H > maxY+15){
+            if(maxX-10 <= P.x() &&  maxX >= P.x() && maxY+20 <= P.y() && maxY+30 >= P.y())
+                return true;
+        }else if(0 < minY-15){
+            if(maxX-10 <= P.x() &&  maxX >= P.x() && minY-40 <= P.y() && minY-30 >= P.y())
+                return true;
+        }
+    }else{
+            int midX = MiddleX(pc0,pc1,pc2,pc3),
+                midY = MiddleY(pc0,pc1,pc2,pc3);
+            if(midX-10 <= P.x() &&  midX >= P.x() && midY-10 <= P.y() && minY-30 >= P.y())
+                return true;
+    }
+    return false;
 }

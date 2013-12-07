@@ -12,13 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    btnNew = new QToolButton;
-    btnOpen = new QToolButton;
-    btnSave = new QToolButton;
-    btnPenConfig = new QToolButton;
-    btnBezier = new QToolButton;
-    btnHermite = new QToolButton;
-    canvas = new MyCanvas;
+    btnFile = new QToolButton;
+
+    btnBezier= new QPushButton("Bezier");
+    btnHermite = new QPushButton("Hermite");    
+    btnPenConfig = new QPushButton("Style");    
+    btnCancelCurve = new QPushButton("Cancel");
+    canvas = new MyCanvas();
 
     this->SetupComponents();
 }
@@ -30,29 +30,44 @@ MainWindow::~MainWindow()
 
 void MainWindow::SetupComponents(){
 
+    connect(btnBezier,SIGNAL(clicked()),this,SLOT(clickBtnBezier()));
+    connect(btnHermite,SIGNAL(clicked()),this,SLOT(clickBtnHermite()));
+    connect(btnCancelCurve,SIGNAL(clicked()),this,SLOT(clickBtnCancelCurve()));
+
     //Usar icones nos botoes
-
-    btnNew->setText("Novo");
-    btnOpen->setText("Abrir");
-    btnSave->setText("Salvar");
-    btnPenConfig->setText("Configurar Caneta");
-    btnBezier->setText("Bezier");
-    btnHermite->setText("Hermite");
-
-
-    ui->ToolBarMain->addWidget(btnNew);
-    ui->ToolBarMain->addWidget(btnOpen);
-    ui->ToolBarMain->addWidget(btnSave);
-    ui->ToolBarMain->addSeparator();    
+    btnFile->setText("File");
+    ui->ToolBarMain->addWidget(btnFile);
+    ui->ToolBarMain->addSeparator();
     ui->ToolBarMain->addWidget(btnPenConfig);
     ui->ToolBarMain->addSeparator();
     ui->ToolBarMain->addWidget(btnBezier);
     ui->ToolBarMain->addWidget(btnHermite);
+    ui->ToolBarMain->addWidget(btnCancelCurve);
     ui->LayoutCanvas->addWidget(canvas);
+
+    btnCancelCurve->setEnabled(false);
 
     this->interfaceUpdate();
 }
 
 void MainWindow::interfaceUpdate(void){
-    update();
+    canvas->interfaceUpdate();
+    btnCancelCurve->setEnabled(false);
 }
+
+void MainWindow::clickBtnBezier(){
+    btnCancelCurve->setEnabled(true);
+    canvas->setTypeCurve(BEZIER);    
+}
+
+void MainWindow::clickBtnHermite(){
+    btnCancelCurve->setEnabled(true);
+    canvas->setTypeCurve(HERMITE);
+}
+
+void MainWindow::clickBtnCancelCurve(){
+    canvas->setTypeCurve(NOCURVE);
+    canvas->resetCurve();
+    interfaceUpdate();
+}
+

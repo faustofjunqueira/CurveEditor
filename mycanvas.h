@@ -8,27 +8,51 @@
 #include "canvascore.h"
 #include <QList>
 #include "curve.h"
+#include "QPushButton"
 
 class MyCanvas: public QLabel
 {
 
 public:    
+    Curve *SelectedCurve;
     MyCanvas();
     void mouseMoveEvent ( QMouseEvent * event );
     void mousePressEvent(QMouseEvent *event);
     unsigned int getNCurves();
-    void cancelCurve();
-    void prepareCurve(QPen pen, char typeCurve);
+    void resetCurve();
+    void setTypeCurve(char typeCurve);
+    char getTypeCurve();
+    void interfaceUpdate(void);
+    void deleteSelectedCurve();
 private:
     QList<Curve> CurveList;
     CanvasPoint LastClickedPoint;
+    CanvasPoint LastMovedPoint;
+    CanvasPoint MovingPoint;
     CanvasPoint ClickedPoint;
-    bool startDrawLine;
+    bool FirstPointSelected;
+
+    char typeCurve;
     QImage CanvasBufferImage;
     CanvasPoint *BufferPoints; // pontos que estao no buffer
+    QColor bgColor;
+    QPen PenDrawLine; // Cor da linha confiracao
+    QPainter painter;    
+    QPoint *SelectedControlPoint;
+    bool lockMoveControlPoint;
+    QPushButton *btnRotateRight, *btnRotateLeft, *btnDelete;
 
+    void UnSelectCurve();
+    Curve *SelectCurve(unsigned int i);
+    Curve *SelectCurve(Curve *c);
+    Curve *SelectCurve(CanvasPoint p);
+
+    void renderAllCurve(bool drawMesh);
+    void clearImage();
     void renderBezier();
-    void interfaceUpdate(void);
+    void renderHermite();
+
+
 };
 
 #endif // MYCANVAS_H
