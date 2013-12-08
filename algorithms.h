@@ -131,4 +131,6 @@ void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, 
 
 bool InRectMoveOfCurve(QPoint P, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W=resolutionW, int H=resolutionH);
 
+void DrawCircleInCurve(QPainter *painter,QPoint p0,QPoint p1,QPoint p2,QPoint p3);
+
 #endif // ALGORITHMS_H

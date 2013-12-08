@@ -7,7 +7,9 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QMenu>
 #include "mycanvas.h"
+#include "styledialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +27,13 @@ private slots:
     void clickBtnBezier();
     void clickBtnHermite();
     void clickBtnCancelCurve();
+    void clickDeleteCurve();
+    void clickStyle();
+
+//    void OpenFileAct();
+//    void SaveFileAct();
+//    void ExitFileAct();
+
 private:
     Ui::MainWindow *ui;    
 
@@ -34,12 +43,15 @@ private:
         *btnPenConfig,
         *btnBezier,
         *btnHermite,
-        *btnCancelCurve;
-
+        *btnCancelCurve,
+        *btnDeleteCurve;
+    QMenu *FileMenu;
+    //QAction *openAct, *saveAct, *exitAct, *exportAct;
     MyCanvas *canvas;
+    QPen Pen;
     QLabel *lbcontrol0,*lbcontrol1,*lbcontrol2,*lbcontrol3;
     QTextEdit *txtcontol0,*txtcontol1,*txtcontol2,*txtcontol3;//91x31
-
+    StyleDialog StyleWindow;
     void interfaceUpdate(void);
     void SetupComponents();
 

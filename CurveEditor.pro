@@ -17,14 +17,17 @@ SOURCES += main.cpp \
     algorithms.cpp \
     curve.cpp \
     mycanvas.cpp \
-    canvascore.cpp
+    canvascore.cpp \
+    styledialog.cpp
 
 HEADERS  += \
     mainwindow.h \
     algorithms.h \
     curve.h \
     mycanvas.h \
-    canvascore.h
+    canvascore.h \
+    styledialog.h
 
 FORMS    += \
-    mainwindow.ui
+    mainwindow.ui \
+    styledialog.ui

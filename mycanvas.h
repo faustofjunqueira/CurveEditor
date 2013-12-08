@@ -15,7 +15,7 @@ class MyCanvas: public QLabel
 
 public:    
     Curve *SelectedCurve;
-    MyCanvas();
+    MyCanvas(QPushButton *btnDeleteCurve);
     void mouseMoveEvent ( QMouseEvent * event );
     void mousePressEvent(QMouseEvent *event);
     unsigned int getNCurves();
@@ -24,6 +24,7 @@ public:
     char getTypeCurve();
     void interfaceUpdate(void);
     void deleteSelectedCurve();
+    void setPen(QPen p);
 private:
     QList<Curve> CurveList;
     CanvasPoint LastClickedPoint;
@@ -37,10 +38,12 @@ private:
     CanvasPoint *BufferPoints; // pontos que estao no buffer
     QColor bgColor;
     QPen PenDrawLine; // Cor da linha confiracao
-    QPainter painter;    
+    QPainter painter;
+    QPen PenCurve;
     QPoint *SelectedControlPoint;
     bool lockMoveControlPoint;
-    QPushButton *btnRotateRight, *btnRotateLeft, *btnDelete;
+    bool lockMoveCurve;
+    QPushButton *btnDeleteCurve;
 
     void UnSelectCurve();
     Curve *SelectCurve(unsigned int i);
@@ -51,7 +54,6 @@ private:
     void clearImage();
     void renderBezier();
     void renderHermite();
-
 
 };
 

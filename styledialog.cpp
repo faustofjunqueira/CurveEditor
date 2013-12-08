@@ -1,0 +1,71 @@
+#include "styledialog.h"
+#include "ui_styledialog.h"
+
+StyleDialog::StyleDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::StyleDialog)
+{
+    ui->setupUi(this);
+    Pen.setColor(QColor(255,255,255));
+    SetupComponent();
+}
+
+StyleDialog::~StyleDialog()
+{
+    delete ui;
+}
+
+void StyleDialog::SetupComponent(){
+    ui->PenStyleComboBox->addItem("Qt::SolidLine");
+    ui->PenStyleComboBox->addItem("Qt::DashLine");
+    ui->PenStyleComboBox->addItem("Qt::DotLine");
+    ui->PenStyleComboBox->addItem("Qt::DashDotLine");
+    ui->PenStyleComboBox->addItem("Qt::DashDotDotLine");
+    ui->PenStyleComboBox->addItem("Qt::CustomDashLine");
+
+    ui->CapStyleComboBox->addItem("Qt::SquareCap");
+    ui->CapStyleComboBox->addItem("Qt::FlatCap");
+    ui->CapStyleComboBox->addItem("Qt::RoundCap");
+}
+
+void StyleDialog::accept(){
+    if(ui->ColorField->toPlainText().size() == 8){
+        bool ok;
+        QList<int> rgba;
+        QString res("0x");
+        QString s = ui->ColorField->toPlainText();
+        for(int i = 0; i < 4; i++){
+            res.append(s[i*2]);
+            res.append(s[i*2 +1]);
+            rgba.append(res.toInt(&ok,16));
+            res.remove(2,2);
+        }
+        Pen.setColor(QColor(rgba[0],rgba[1],rgba[2],rgba[3]));
+    }
+    switch (ui->PenStyleComboBox->currentIndex()) {
+        case 1:Pen.setStyle(Qt::SolidLine);break;
+        case 2:Pen.setStyle(Qt::DashLine);break;
+        case 3:Pen.setStyle(Qt::DotLine);break;
+        case 4:Pen.setStyle(Qt::DashDotLine);break;
+        case 5:Pen.setStyle(Qt::DashDotDotLine);break;
+        case 6:Pen.setStyle(Qt::CustomDashLine);break;
+    }
+    switch(ui->CapStyleComboBox->currentIndex()){
+        case 1: Pen.setCapStyle(Qt::SquareCap);break;
+        case 2: Pen.setCapStyle(Qt::FlatCap);break;
+        case 3: Pen.setCapStyle(Qt::RoundCap);break;
+    }
+    if(ui->WidthField->toPlainText().size() > 0){
+        int w;
+        bool ok;
+        w = ui->WidthField->toPlainText().toInt(&ok,10);
+        if(ok)
+            Pen.setWidth(w);
+    }
+    c->setPen(Pen);
+    this->hide();
+}
+
+void StyleDialog::setCanvas(MyCanvas *c){
+    this->c = c;
+}

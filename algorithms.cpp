@@ -48,6 +48,7 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
         painter->drawLine(pc0,pc1);
         painter->drawLine(pc2,pc1);
         painter->drawLine(pc2,pc3);
+        DrawCircleInCurve(painter,pc0,pc1,pc2,pc3);
         DrawRectMoveOfCurve(painter,pc0,pc1,pc2,pc3);
     }
 
@@ -128,6 +129,8 @@ void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoi
         painter->setPen(penBack);
         painter->drawLine(pc0,T0);
         painter->drawLine(pc1,T1);
+        DrawRectMoveOfCurve(painter,pc0,pc1,T0,T1);
+        DrawCircleInCurve(painter,pc0,pc1,T0,T1);
         painter->setPen(penOrig);
     }
     float TTT,TT;
@@ -138,6 +141,15 @@ void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoi
         pt = p0*(2*TTT -3*TT + 1) + p1*(-2*TTT + 3*TT) + tan0*(TTT -2*TT + t) + tan1*(TTT - TT);
         painter->drawLine(QPoint(previusPoint.x(),previusPoint.y()),QPoint(pt.x(),pt.y()));
         previusPoint = pt;
+    }
+    if(drawMesh){
+        QPen penOrig(painter->pen());
+        painter->setPen(penBack);
+        painter->drawRect(p0.x()-3,p0.y()-3,6,6);
+        painter->drawRect(p1.x()-3,p1.y()-3,6,6);
+        painter->drawEllipse(T0,3,3);
+        painter->drawEllipse(T1,3,3);
+        painter->setPen(penOrig);
     }
     return;
 }
@@ -207,13 +219,13 @@ int MinY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
 int MiddleX(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
     int minX = MinX(pc0,pc1,pc2,pc3),
         maxX = MaxX(pc0,pc1,pc2,pc3);
-    return (int)((maxX-minX)/2);
+    return (int)((maxX-minX)/2) + minX;
 }
 
 int MiddleY(QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3){
     int minY = MinY(pc0,pc1,pc2,pc3),
         maxY = MaxY(pc0,pc1,pc2,pc3);
-    return (int)((maxY-minY)/2);
+    return (int)((maxY-minY)/2) + minY;
 }
 
 void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W, int H){
@@ -221,16 +233,20 @@ void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, 
         minY = MinY(pc0,pc1,pc2,pc3),
         minX = MinX(pc0,pc1,pc2,pc3),
         maxX = MaxX(pc0,pc1,pc2,pc3);
-    if(W > minX){
-        if(H > maxY+15)
+    if(W > minX && 0 < minX){
+        if(H > maxY+30)
             drawRectMove(painter,QPoint(minX, maxY+30));
-        else if(0 < minY-15)
+        else if(0 < minY-30)
             drawRectMove(painter,QPoint(minX, minY-30));
-    }else if(0 > minX){
-        if(H > maxY+15)
+        else
+            drawRectMove(painter,QPoint(minX, MiddleY(pc0,pc1,pc2,pc3)));
+    }else if(0 > minX && W > maxX){
+        if(H > maxY+30)
             drawRectMove(painter,QPoint(maxX, maxY+30));
-        else if(0 < minY-15)
+        else if(0 < minY-30)
             drawRectMove(painter,QPoint(maxX, minY-30));
+        else
+            drawRectMove(painter,QPoint(maxX, MiddleY(pc0,pc1,pc2,pc3)));
     }else{
             int midX = MiddleX(pc0,pc1,pc2,pc3),
                 midY = MiddleY(pc0,pc1,pc2,pc3);
@@ -243,27 +259,54 @@ bool InRectMoveOfCurve(QPoint P, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,
         minY = MinY(pc0,pc1,pc2,pc3),
         minX = MinX(pc0,pc1,pc2,pc3),
         maxX = MaxX(pc0,pc1,pc2,pc3);
-    if(W > minX){
-        if(H > maxY+15){
+    if(W > minX && 0 < minX){
+        if(H > maxY+30){
             if(minX-10 <= P.x() &&  minX >= P.x() && maxY+20 <= P.y() && maxY+30 >= P.y())
                 return true;
-        }else if(0 < minY-15){
+        }else if(0 < minY-30){
             if(minX-10 <= P.x() &&  minX >= P.x() && minY-40 <= P.y() && minY-30 >= P.y())
                 return true;
+        }else{
+            int midY = MiddleY(pc0,pc1,pc2,pc3);
+            if( minX-10 <= P.x() && minX >= P.x() && midY-10 <= P.y() && midY >= P.y())
+                return true;
         }
-    }else if(0 > minX){
-        if(H > maxY+15){
+    }else if(0 > minX && W > maxX){
+        if(H > maxY+30){
             if(maxX-10 <= P.x() &&  maxX >= P.x() && maxY+20 <= P.y() && maxY+30 >= P.y())
                 return true;
-        }else if(0 < minY-15){
+        }else if(0 < minY-30){
             if(maxX-10 <= P.x() &&  maxX >= P.x() && minY-40 <= P.y() && minY-30 >= P.y())
+                return true;
+        }else{
+            int midY = MiddleY(pc0,pc1,pc2,pc3);
+            if( maxX-10 <= P.x() && maxX >= P.x() && midY-10 <= P.y() && midY >= P.y())
                 return true;
         }
     }else{
             int midX = MiddleX(pc0,pc1,pc2,pc3),
                 midY = MiddleY(pc0,pc1,pc2,pc3);
-            if(midX-10 <= P.x() &&  midX >= P.x() && midY-10 <= P.y() && minY-30 >= P.y())
+            if(midX-10 <= P.x() &&  midX >= P.x() && midY-10 <= P.y() && minY >= P.y()) // Arrumar Esse CASO
                 return true;
     }
     return false;
+}
+
+void DrawCircleInCurve(QPainter *painter, QPoint p0, QPoint p1, QPoint p2, QPoint p3){
+    int midX = MiddleX(p0,p1,p2,p3),
+        midY = MiddleY(p0,p1,p2,p3),
+        maxX = MaxX(p0,p1,p2,p3),
+        minX = MinX(p0,p1,p2,p3),
+        maxY = MaxY(p0,p1,p2,p3),
+        minY = MinY(p0,p1,p2,p3),
+        deltaX = abs(midX-minX) > abs(midX - maxX) ? abs(midX-minX):abs(midX - maxX),
+        deltaY = abs(midY-minY) > abs(midY - maxY) ? abs(midY-minY):abs(midY - maxY),
+        maxDelta = (deltaX > deltaY ? deltaX : deltaY)+3;//Pego o delta
+    painter->drawEllipse(QPoint(midX,midY),maxDelta ,maxDelta);
+    painter->drawRect(midX-maxDelta-3,midY-3,6,6);
+    painter->drawRect(midX+maxDelta-3,midY-3,6,6);
+    painter->drawRect(midX-3,midY-maxDelta-3,6,6);
+    painter->drawRect(midX-3,midY+maxDelta-3,6,6);
+
+
 }

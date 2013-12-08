@@ -5,7 +5,24 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 #include "curve.h"
+
+/** TODO
+ * Implementar:
+ *    Botao Para Rodar a Curva
+ *         Usar matriz de rotaçao
+ *    Info da Curva
+ *    Lista de Curvas
+ *         Quando clicar em uma Curva Selecionar a Curva
+ *    Salvar
+ *    Abrir
+ *    Sair
+ *    Exportar como imagem
+ *    Algoitmo de Bresenham
+ * Corrigir Bug
+ *    algorithim linha 289
+ */
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,12 +30,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     btnFile = new QToolButton;
-
+    FileMenu = new QMenu;
     btnBezier= new QPushButton("Bezier");
     btnHermite = new QPushButton("Hermite");    
     btnPenConfig = new QPushButton("Style");    
     btnCancelCurve = new QPushButton("Cancel");
-    canvas = new MyCanvas();
+    btnDeleteCurve = new QPushButton("X");
+    canvas = new MyCanvas(btnDeleteCurve);
+    StyleWindow.setCanvas(canvas);
 
     this->SetupComponents();
 }
@@ -33,6 +52,10 @@ void MainWindow::SetupComponents(){
     connect(btnBezier,SIGNAL(clicked()),this,SLOT(clickBtnBezier()));
     connect(btnHermite,SIGNAL(clicked()),this,SLOT(clickBtnHermite()));
     connect(btnCancelCurve,SIGNAL(clicked()),this,SLOT(clickBtnCancelCurve()));
+    connect(btnDeleteCurve,SIGNAL(clicked()),this,SLOT(clickDeleteCurve()));
+    connect(btnPenConfig,SIGNAL(clicked()),this,SLOT(clickStyle()));
+
+    btnFile->setMenu(FileMenu);
 
     //Usar icones nos botoes
     btnFile->setText("File");
@@ -43,16 +66,20 @@ void MainWindow::SetupComponents(){
     ui->ToolBarMain->addWidget(btnBezier);
     ui->ToolBarMain->addWidget(btnHermite);
     ui->ToolBarMain->addWidget(btnCancelCurve);
+    ui->ToolBarMain->addSeparator();
+    ui->ToolBarMain->addWidget(btnDeleteCurve);
     ui->LayoutCanvas->addWidget(canvas);
 
     btnCancelCurve->setEnabled(false);
+    btnDeleteCurve->setEnabled(false);
+
+
 
     this->interfaceUpdate();
 }
 
 void MainWindow::interfaceUpdate(void){
-    canvas->interfaceUpdate();
-    btnCancelCurve->setEnabled(false);
+    canvas->interfaceUpdate();    
 }
 
 void MainWindow::clickBtnBezier(){
@@ -68,6 +95,17 @@ void MainWindow::clickBtnHermite(){
 void MainWindow::clickBtnCancelCurve(){
     canvas->setTypeCurve(NOCURVE);
     canvas->resetCurve();
+    btnCancelCurve->setEnabled(false);
     interfaceUpdate();
 }
 
+void MainWindow::clickDeleteCurve(){
+    canvas->deleteSelectedCurve();
+    btnDeleteCurve->setEnabled(false);
+    interfaceUpdate();
+}
+
+void MainWindow::clickStyle(){
+    StyleWindow.show();
+    interfaceUpdate();
+}

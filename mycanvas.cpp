@@ -9,11 +9,13 @@
 #include "algorithms.h"
 #include "canvascore.h"
 
-MyCanvas::MyCanvas()
+MyCanvas::MyCanvas(QPushButton *btnDeleteCurve)
 {
     CanvasCoreInit();
+    this->btnDeleteCurve = btnDeleteCurve;
     FirstPointSelected = false;
     lockMoveControlPoint = true;
+    lockMoveCurve = true;
     SelectedCurve = NULL;
     SelectedControlPoint = NULL;
 
@@ -28,10 +30,12 @@ MyCanvas::MyCanvas()
     CurveList.clear();
 
     PenDrawLine.setColor(QColor(130,130,130));
+    PenCurve.setColor(QColor(255,255,255));
     painter.begin(&CanvasBufferImage);
     painter.setPen(PenDrawLine);
 
     typeCurve = NOCURVE;
+
 }
 
 //Quando eu arrasto o mouse
@@ -42,7 +46,7 @@ void MyCanvas::mouseMoveEvent ( QMouseEvent * event ){
     if(!lockMoveControlPoint && SelectedCurve && SelectedControlPoint){
         SelectedControlPoint->setX(MovingPoint.x);
         SelectedControlPoint->setY(MovingPoint.y);
-    }if(SelectedCurve->InMoveRect(QPoint(MovingPoint.x,MovingPoint.y))){
+    }if(!lockMoveCurve){
         if(MovingPoint.x > ClickedPoint.x)
             SelectedCurve->IncrementX(MovingPoint.x - ClickedPoint.x);
         else if(MovingPoint.x < ClickedPoint.x)
@@ -51,17 +55,18 @@ void MyCanvas::mouseMoveEvent ( QMouseEvent * event ){
             SelectedCurve->IncrementY(MovingPoint.y - ClickedPoint.y);
         else if(MovingPoint.y < ClickedPoint.y)
             SelectedCurve->DecrementY(ClickedPoint.y-MovingPoint.y);
+        ClickedPoint = MovingPoint;
     }
     resetCurve();
     interfaceUpdate();
     return;
 }
 
-//Quando eu clico
 void MyCanvas::mousePressEvent(QMouseEvent *event){    
     LastClickedPoint = ClickedPoint;
     ClickedPoint.x = event->x(); ClickedPoint.y = event->y();
     lockMoveControlPoint = true;
+    lockMoveCurve = true;
     SelectedControlPoint = NULL;
     switch(typeCurve){
         case BEZIER: renderBezier();break;
@@ -69,8 +74,10 @@ void MyCanvas::mousePressEvent(QMouseEvent *event){
     default: {
 
                 if(SelectedCurve){
-                    if(SelectedCurve->InMoveRect(QPoint(ClickedPoint.x,ClickedPoint.y)))
+                    if(SelectedCurve->InMoveRect(QPoint(ClickedPoint.x,ClickedPoint.y))){
+                        lockMoveCurve = false;
                         return;
+                    }
                     SelectedControlPoint = SelectedCurve->selectControlPoint(QPoint(ClickedPoint.x,ClickedPoint.y));
                     if(SelectedControlPoint){
                         lockMoveControlPoint = false;
@@ -85,20 +92,19 @@ void MyCanvas::mousePressEvent(QMouseEvent *event){
 }
 
 void MyCanvas::renderBezier(){
-    SelectedCurve = NULL;
+    UnSelectCurve();
+    painter.setPen(PenDrawLine);
     painter.drawRect(ClickedPoint.x-3,ClickedPoint.y-3,6,6); //Desenha um quadradinho aonde clicou click
 
     if(CanvasBufferAddPoint(ClickedPoint)){
         CanvasBufferGetPoints(BufferPoints);
-        //Quando Puder escolher o tipo da curva, isso daki roda;
-        QPen pen(QColor(255,255,255));
-        pen.setWidth(3);
-        Curve *curve = new Curve(BEZIER,pen);
+        Curve *curve = new Curve(BEZIER,PenCurve);
         CurveList.append(*curve);
         CurveList.last().ptControl.append(QPoint(BufferPoints[0].x,BufferPoints[0].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[1].x,BufferPoints[1].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[2].x,BufferPoints[2].y));
-        CurveList.last().ptControl.append(QPoint(BufferPoints[3].x,BufferPoints[3].y));        
+        CurveList.last().ptControl.append(QPoint(BufferPoints[3].x,BufferPoints[3].y));
+        SelectCurve(&CurveList.last());
         resetCurve();
         return;
     }
@@ -109,18 +115,17 @@ void MyCanvas::renderBezier(){
 }
 
 void MyCanvas::renderHermite(){
+    UnSelectCurve();
+    painter.setPen(PenDrawLine);
     painter.drawRect(ClickedPoint.x-3,ClickedPoint.y-3,6,6); //Desenha um quadradinho aonde clicou click
 
     if(CanvasBufferAddPoint(ClickedPoint)){
         CanvasBufferGetPoints(BufferPoints);
-        //Quando Puder escolher o tipo da curva, isso daki roda;
-        QPen pen(QColor(255,255,255));
-        pen.setWidth(3);
-        Curve *curve = new Curve(HERMITE,pen);
+        Curve *curve = new Curve(HERMITE,PenCurve);
         CurveList.append(*curve);
-        CurveList.last().ptControl.append(QPoint(BufferPoints[0].x,BufferPoints[0].y));
-        CurveList.last().ptControl.append(QPoint(BufferPoints[1].x,BufferPoints[1].y));
+        CurveList.last().ptControl.append(QPoint(BufferPoints[0].x,BufferPoints[0].y));        
         CurveList.last().ptControl.append(QPoint(BufferPoints[2].x,BufferPoints[2].y));
+        CurveList.last().ptControl.append(QPoint(BufferPoints[1].x,BufferPoints[1].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[3].x,BufferPoints[3].y));
         SelectCurve(&CurveList.last());
         resetCurve();
@@ -136,7 +141,7 @@ void MyCanvas::resetCurve(){
     clearImage();
     renderAllCurve(false);
     if(SelectedCurve)
-        SelectedCurve->draw(&painter,true);    
+        SelectedCurve->draw(&painter,true);
     CanvasBufferReset();
 }
 
@@ -193,7 +198,7 @@ char MyCanvas::getTypeCurve(){
 Curve *MyCanvas::SelectCurve(unsigned int i){
     UnSelectCurve();
     if((int)i < CurveList.size())
-        SelectedCurve = &CurveList[i];        
+        SelectCurve(&CurveList[i]);
 
     return SelectedCurve;
 }
@@ -201,11 +206,13 @@ Curve *MyCanvas::SelectCurve(unsigned int i){
 Curve *MyCanvas::SelectCurve(Curve *c){
     UnSelectCurve();
     SelectedCurve = c;
+    btnDeleteCurve->setEnabled(true);
     return SelectedCurve;
 }
 
 void MyCanvas::UnSelectCurve(){    
     SelectedCurve = NULL;
+    btnDeleteCurve->setEnabled(false);
 }
 
 void MyCanvas::deleteSelectedCurve(){
@@ -216,4 +223,9 @@ void MyCanvas::deleteSelectedCurve(){
                 CurveList.removeAt(i);
             }
     resetCurve();
+}
+
+void MyCanvas::setPen(QPen p){
+    PenCurve = p;
+    painter.setPen(p);
 }
