@@ -29,6 +29,7 @@ void StyleDialog::SetupComponent(){
 }
 
 void StyleDialog::accept(){
+    ui->IssueLabel->setText("");
     if(ui->ColorField->toPlainText().size() == 8){
         bool ok;
         QList<int> rgba;
@@ -41,6 +42,21 @@ void StyleDialog::accept(){
             res.remove(2,2);
         }
         Pen.setColor(QColor(rgba[0],rgba[1],rgba[2],rgba[3]));
+    }else if(ui->ColorField->toPlainText().size() == 6){
+        bool ok;
+        QList<int> rgba;
+        QString res("0x");
+        QString s = ui->ColorField->toPlainText();
+        for(int i = 0; i < 3; i++){
+            res.append(s[i*2]);
+            res.append(s[i*2 +1]);
+            rgba.append(res.toInt(&ok,16));
+            res.remove(2,2);
+        }
+        Pen.setColor(QColor(rgba[0],rgba[1],rgba[2],255));
+    }else{
+        ui->IssueLabel->setText("ERROR: Color invalid");
+        return;
     }
     switch (ui->PenStyleComboBox->currentIndex()) {
         case 1:Pen.setStyle(Qt::SolidLine);break;
