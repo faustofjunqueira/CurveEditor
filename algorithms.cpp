@@ -121,26 +121,50 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
     return;
 }
 
-// Provavelmente esta errado o Hermite
-void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh, double steps){
-    QVector2D p0(pc0), p1(pc1), tan0(T0), tan1(T1), previusPoint(p0), pt;
+void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh, unsigned int nsteps){
+
     if(drawMesh){
         QPen penOrig(painter->pen());
-        painter->setPen(penBack);
-        painter->drawLine(pc0,T0);
-        painter->drawLine(pc1,T1);
-        DrawRectMoveOfCurve(painter,pc0,pc1,T0,T1);
-        DrawCircleInCurve(painter,pc0,pc1,T0,T1);
-        painter->setPen(penOrig);
+             painter->setPen(penBack);
+             painter->drawLine(pc0,T0);
+             painter->drawLine(pc1,T1);
+             DrawRectMoveOfCurve(painter,pc0,pc1,T0,T1);
+             DrawCircleInCurve(painter,pc0,pc1,T0,T1);
+             painter->setPen(penOrig);
     }
-    float TTT,TT;
-    for(float t = 0; t <= 1.0; t+=steps){
-        TTT = t*t*t;
-        TT = t*t;
-        //Para suavizer a curva, multiplica-se algum lugar aqui por WG = 0.5, suponho que multiplique por tan0 e tan1
-        pt = p0*(2*TTT -3*TT + 1) + p1*(-2*TTT + 3*TT) + tan0*(TTT -2*TT + t) + tan1*(TTT - TT);
-        painter->drawLine(QPoint(previusPoint.x(),previusPoint.y()),QPoint(pt.x(),pt.y()));
-        previusPoint = pt;
+    QPoint    opostoPoint = oposto(pc1,T1);
+    QVector2D p0(pc0),
+              p1(T0),
+              p2(opostoPoint),
+              p3(pc1);
+
+    QVector2D dd01((p1-p0)/nsteps),
+              dd12((p2-p1)/nsteps),
+              dd23((p3-p2)/nsteps),
+              dd02,dd13,dd03,
+              p01,p12,p23,p02,p13,p03,
+              previusPoint02(p0),previusPoint13(p1),previusPoint03(p0);
+              previusPoint02 = previusPoint03 = p0;
+              previusPoint13 = p1;
+
+    for(int i = 0; i <= (int)nsteps; i++){
+        p01 = p0+dd01*i;
+        p12 = p1+dd12*i;
+        p23 = p2+dd23*i;
+
+        dd02 = (p12-p01)/nsteps;
+        p02 = p01 + dd02*i;
+        dd13 = (p23-p12)/nsteps;
+        p13 = p12 + dd13*i;
+        dd03 = (p13 - p02)/nsteps;
+        p03 = p02 + dd03*i;
+
+        painter->drawLine(QPoint(previusPoint03.x(),previusPoint03.y()),QPoint(p03.x(),p03.y()));
+
+        previusPoint02 = p02;
+        previusPoint13 = p13;
+        previusPoint03 = p03;
+
     }
     if(drawMesh){
         QPen penOrig(painter->pen());
@@ -309,4 +333,12 @@ void DrawCircleInCurve(QPainter *painter, QPoint p0, QPoint p1, QPoint p2, QPoin
     painter->drawRect(midX-3,midY+maxDelta-3,6,6);
 
 
+}
+
+QPoint oposto(QPoint centro, QPoint ponto){
+    int x = centro.x() - ponto.x();
+    int y = centro.y() - ponto.y();
+    x += centro.x();
+    y += centro.y();
+    return QPoint(x,y);
 }

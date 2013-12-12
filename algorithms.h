@@ -10,6 +10,7 @@
 
 #define resolutionW 1009
 #define resolutionH 579
+#define NSTEPS 50
 
 /**
     Algoritmo de desenho de linha de Bresenham
@@ -60,7 +61,7 @@ void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2);
     AlgorithmBezier(&painter, p1, p0,p3,p2,true);
     painter.end();
 */
-void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3, bool drawMesh = false, unsigned int nsteps = 50);
+void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3, bool drawMesh = false, unsigned int nsteps = NSTEPS);
 
 /**
     Referencia:
@@ -94,7 +95,7 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
         AlgorithmHermite(&painter,p0,p1,p2,p3);
 
 */
-void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh=false, double steps = 0.05);
+void AlgorithmHermite(QPainter *painter, QPoint pc0, QPoint pc1, QPoint T0, QPoint T1, bool drawMesh=false, unsigned int nsteps = NSTEPS);
 
 double distance2Points(QPoint a, QPoint b);
 
@@ -132,5 +133,7 @@ void DrawRectMoveOfCurve(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, 
 bool InRectMoveOfCurve(QPoint P, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3,int W=resolutionW, int H=resolutionH);
 
 void DrawCircleInCurve(QPainter *painter,QPoint p0,QPoint p1,QPoint p2,QPoint p3);
+
+QPoint oposto(QPoint centro, QPoint ponto);
 
 #endif // ALGORITHMS_H

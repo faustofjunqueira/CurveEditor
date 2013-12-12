@@ -50,6 +50,11 @@ void StyleDialog::accept(){
         for(int i = 0; i < 3; i++){
             res.append(s[i*2]);
             res.append(s[i*2 +1]);
+            if(!((('0' <= res[2] && res[2] <= '9') || ('A' <= res[2] && res[2] <= 'F') || ('a' <= res[2] && res[2] <= 'f')) &&
+               (('0' <= res[3] && res[3] <= '9') || ('A' <= res[3] && res[3] <= 'F') || ('a' <= res[3] && res[3] <= 'f')))){
+                    ui->IssueLabel->setText("ERROR: Color invalid");
+                    return;
+            }
             rgba.append(res.toInt(&ok,16));
             res.remove(2,2);
         }
