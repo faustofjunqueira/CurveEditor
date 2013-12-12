@@ -27,8 +27,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>306</width>
-        <height>73</height>
+        <width>311</width>
+        <height>70</height>
        </rect>
       </property>
       <attribute name="label">
@@ -84,8 +84,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>306</width>
-        <height>73</height>
+        <width>311</width>
+        <height>70</height>
        </rect>
       </property>
       <attribute name="label">
@@ -98,6 +98,14 @@
       </layout>
      </widget>
      <widget class="QWidget" name="page3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>311</width>
+        <height>70</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>Cap style</string>
       </attribute>
@@ -113,6 +121,14 @@
       </widget>
      </widget>
      <widget class="QWidget" name="Width">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>311</width>
+        <height>70</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>Width</string>
       </attribute>
@@ -142,13 +158,25 @@
      </widget>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="IssueLabel">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>
