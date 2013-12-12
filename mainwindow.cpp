@@ -8,21 +8,7 @@
 
 #include "curve.h"
 
-/** TODO
- * Implementar:
- *    Botao Para Rodar a Curva
- *         Usar matriz de rotaçao
- *    Info da Curva
- *    Lista de Curvas
- *         Quando clicar em uma Curva Selecionar a Curva
- *    Salvar
- *    Abrir
- *    Sair
- *    Exportar como imagem
- *    Algoitmo de Bresenham
- * Corrigir Bug
- *    algorithim linha 289
- */
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
