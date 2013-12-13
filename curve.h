@@ -19,6 +19,7 @@ public:
     QPoint getPT1();
     QPoint getPT2();
     QPoint getPT3();
+    QPen getPen();
     char getCurveType();
     void setPT0(QPoint pt);
     void setPT1(QPoint pt);
@@ -33,6 +34,7 @@ public:
     void IncrementY(int scalar);
     void DecrementX(int scalar);
     void DecrementY(int scalar);
+    void setPen(QPen pen);
 private:
 
     char curve;

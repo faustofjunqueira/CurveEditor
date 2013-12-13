@@ -35,6 +35,10 @@ char Curve::getCurveType(){
     return curve;
 }
 
+QPen Curve::getPen(){
+    return pen;
+}
+
 void Curve::setPT0(QPoint pt){
     ptControl[0] = pt;
 }
@@ -113,4 +117,8 @@ void Curve::DecrementY(int scalar){
     ptControl[1].setY(ptControl[1].y()-scalar);
     ptControl[2].setY(ptControl[2].y()-scalar);
     ptControl[3].setY(ptControl[3].y()-scalar);
+}
+
+void Curve::setPen(QPen pen){
+    this->pen = pen;
 }

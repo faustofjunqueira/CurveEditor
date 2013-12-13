@@ -82,6 +82,9 @@ void StyleDialog::accept(){
         w = ui->WidthField->toPlainText().toInt(&ok,10);
         if(ok)
             Pen.setWidth(w);
+    }else{
+        ui->IssueLabel->setText("ERROR: Width invalid");
+        return;
     }
     c->setPen(Pen);
     this->hide();

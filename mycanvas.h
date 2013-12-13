@@ -9,13 +9,17 @@
 #include <QList>
 #include "curve.h"
 #include "QPushButton"
+#include "QTextEdit"
+#include "QComboBox"
 
 class MyCanvas: public QLabel
 {
 
 public:    
     Curve *SelectedCurve;
-    MyCanvas(QPushButton *btnDeleteCurve);
+    MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
+             QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
+             QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4);
     void mouseMoveEvent ( QMouseEvent * event );
     void mousePressEvent(QMouseEvent *event);
     unsigned int getNCurves();
@@ -25,7 +29,22 @@ public:
     void interfaceUpdate(void);
     void deleteSelectedCurve();
     void setPen(QPen p);
+    void addCurve(Curve c);
+    void renderAllCurve(bool drawMesh);
 private:
+    QTextEdit *p0x_field,
+              *p0y_field,
+              *p1x_field,
+              *p1y_field,
+              *p2x_field,
+              *p2y_field,
+              *p3x_field,
+              *p3y_field,
+              *rgba_field,
+              *width_field;
+    QLabel *TypeCurveField, *Label3, *Label4;
+    QComboBox *PenCapField, *PenStyleField;
+
     QList<Curve> CurveList;
     CanvasPoint LastClickedPoint;
     CanvasPoint LastMovedPoint;
@@ -50,7 +69,6 @@ private:
     Curve *SelectCurve(Curve *c);
     Curve *SelectCurve(CanvasPoint p);
 
-    void renderAllCurve(bool drawMesh);
     void clearImage();
     void renderBezier();
     void renderHermite();

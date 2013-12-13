@@ -9,9 +9,27 @@
 #include "algorithms.h"
 #include "canvascore.h"
 
-MyCanvas::MyCanvas(QPushButton *btnDeleteCurve)
+MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
+                   QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
+                   QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4)
 {
     CanvasCoreInit();
+    this->p0x_field = p0x_field;
+    this->p0y_field = p0y_field;
+    this->p1x_field = p1x_field;
+    this->p1y_field = p1y_field;
+    this->p2x_field = p2x_field;
+    this->p2y_field = p2y_field;
+    this->p3x_field = p3x_field;
+    this->p3y_field = p3y_field;
+    this->rgba_field = rgba_field;
+    this->width_field = width_field;
+    this->TypeCurveField = TypeCurveField;
+    this->PenCapField = PenCapField;
+    this->PenStyleField = PenStyleField;
+    this->Label3 = label3;
+    this->Label4 = label4;
+
     this->btnDeleteCurve = btnDeleteCurve;
     FirstPointSelected = false;
     lockMoveControlPoint = true;
@@ -151,6 +169,7 @@ unsigned int MyCanvas::getNCurves(){
 
 void MyCanvas::interfaceUpdate(void){
     this->setPixmap(QPixmap::fromImage(CanvasBufferImage));
+    SelectCurve(SelectedCurve);
     update();
 }
 
@@ -204,15 +223,77 @@ Curve *MyCanvas::SelectCurve(unsigned int i){
 }
 
 Curve *MyCanvas::SelectCurve(Curve *c){
-    UnSelectCurve();
-    SelectedCurve = c;
-    btnDeleteCurve->setEnabled(true);
-    return SelectedCurve;
+    if(c == NULL)
+        return NULL;
+    else{
+        UnSelectCurve();
+        SelectedCurve = c;
+        btnDeleteCurve->setEnabled(true);
+        if(c->getCurveType() == BEZIER){
+            TypeCurveField->setText("Bezier");
+            Label3->setText("P3");
+            Label4->setText("P4");
+            p0x_field->setText(QString::number(SelectedCurve->getPT0().x()));
+            p0y_field->setText(QString::number(SelectedCurve->getPT0().y()));
+            p1x_field->setText(QString::number(SelectedCurve->getPT1().x()));
+            p1y_field->setText(QString::number(SelectedCurve->getPT1().y()));
+            p2x_field->setText(QString::number(SelectedCurve->getPT2().x()));
+            p2y_field->setText(QString::number(SelectedCurve->getPT2().y()));
+            p3x_field->setText(QString::number(SelectedCurve->getPT3().x()));
+            p3y_field->setText(QString::number(SelectedCurve->getPT3().y()));
+        }else if(c->getCurveType() == HERMITE){
+            TypeCurveField->setText("Hermit");
+            Label3->setText("T0");
+            Label4->setText("T1");
+            p0x_field->setText(QString::number(SelectedCurve->getPT0().x()));
+            p0y_field->setText(QString::number(SelectedCurve->getPT0().y()));
+            p1x_field->setText(QString::number(SelectedCurve->getPT1().x()));
+            p1y_field->setText(QString::number(SelectedCurve->getPT1().y()));
+            p2x_field->setText(QString::number(SelectedCurve->getPT2().x()));
+            p2y_field->setText(QString::number(SelectedCurve->getPT2().y()));
+            p3x_field->setText(QString::number(SelectedCurve->getPT3().x()));
+            p3y_field->setText(QString::number(SelectedCurve->getPT3().y()));
+        }
+        switch (SelectedCurve->getPen().style()){
+            case Qt::SolidLine: PenStyleField->setCurrentIndex(1);break;
+            case Qt::DashLine: PenStyleField->setCurrentIndex(2);break;
+            case Qt::DotLine: PenStyleField->setCurrentIndex(3);break;
+            case Qt::DashDotLine: PenStyleField->setCurrentIndex(4);break;
+            case Qt::DashDotDotLine: PenStyleField->setCurrentIndex(5);break;
+            case Qt::CustomDashLine: PenStyleField->setCurrentIndex(6);break;
+        }
+        switch(SelectedCurve->getPen().capStyle()){
+            case Qt::SquareCap: PenCapField->setCurrentIndex(1);break;
+            case Qt::FlatCap: PenCapField->setCurrentIndex(2);break;
+            case Qt::RoundCap: PenCapField->setCurrentIndex(3);break;
+        }
+
+        width_field->setText(QString::number(SelectedCurve->getPen().width()));
+        rgba_field->setText((QString::number(SelectedCurve->getPen().color().red(),16)+QString::number(SelectedCurve->getPen().color().blue(),16)+
+                            QString::number(SelectedCurve->getPen().color().green(),16)+QString::number(SelectedCurve->getPen().color().alpha(),16)).toUpper());
+
+        return SelectedCurve;
+    }
 }
 
-void MyCanvas::UnSelectCurve(){    
+void MyCanvas::UnSelectCurve(){
+    TypeCurveField->setText("");
+    Label3->setText("P3");
+    Label4->setText("P4");
+    p0x_field->setText("");
+    p0y_field->setText("");
+    p1x_field->setText("");
+    p1y_field->setText("");
+    p2x_field->setText("");
+    p2y_field->setText("");
+    p3x_field->setText("");
+    p3y_field->setText("");
+    rgba_field->setText("");
+    width_field->setText("");
+    PenCapField->setCurrentIndex(0);
+    PenStyleField->setCurrentIndex(0);
     SelectedCurve = NULL;
-    btnDeleteCurve->setEnabled(false);
+    btnDeleteCurve->setEnabled(false);    
 }
 
 void MyCanvas::deleteSelectedCurve(){
@@ -228,4 +309,9 @@ void MyCanvas::deleteSelectedCurve(){
 void MyCanvas::setPen(QPen p){
     PenCurve = p;
     painter.setPen(p);
+}
+
+void MyCanvas::addCurve(Curve c){
+    CurveList.append(c);
+    SelectCurve(&CurveList.last());
 }

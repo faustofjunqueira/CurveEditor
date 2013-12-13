@@ -29,7 +29,7 @@ private slots:
     void clickBtnCancelCurve();
     void clickDeleteCurve();
     void clickStyle();
-
+    void accept();
 //    void OpenFileAct();
 //    void SaveFileAct();
 //    void ExitFileAct();
