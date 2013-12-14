@@ -22,8 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
     btnPenConfig = new QPushButton("Style");    
     btnCancelCurve = new QPushButton("Cancel");
     btnDeleteCurve = new QPushButton("X");
+    btnUnSelectCurve = new QPushButton("Unselect curve");
+    ToolBarLabel = new QLabel;
 
-    canvas = new MyCanvas(btnDeleteCurve,ui->CurveXTextEdit,ui->CurveYTextEdit,ui->CurveXTextEdit_2,ui->CurveYTextEdit_2,ui->CurveXTextEdit_3,ui->CurveYTextEdit_3,
+    canvas = new MyCanvas(btnDeleteCurve,btnUnSelectCurve,ui->CurveXTextEdit,ui->CurveYTextEdit,ui->CurveXTextEdit_2,ui->CurveYTextEdit_2,ui->CurveXTextEdit_3,ui->CurveYTextEdit_3,
                           ui->CurveXTextEdit_4,ui->CurveYTextEdit_4,ui->ColorField,ui->WidthField,ui->TypeCurveLabel,ui->CapStyleComboBox,ui->PenStyleComboBox,
                           ui->Label3,ui->Label4);
     StyleWindow.setCanvas(canvas);
@@ -43,6 +45,7 @@ void MainWindow::SetupComponents(){
     connect(btnDeleteCurve,SIGNAL(clicked()),this,SLOT(clickDeleteCurve()));
     connect(btnPenConfig,SIGNAL(clicked()),this,SLOT(clickStyle()));
     connect(ui->ApplyButton,SIGNAL(clicked()),this,SLOT(accept()));
+    connect(btnUnSelectCurve,SIGNAL(clicked()),this,SLOT(unselectcurve()));
 
     btnFile->setMenu(FileMenu);
 
@@ -57,10 +60,16 @@ void MainWindow::SetupComponents(){
     ui->ToolBarMain->addWidget(btnCancelCurve);
     ui->ToolBarMain->addSeparator();
     ui->ToolBarMain->addWidget(btnDeleteCurve);
+    ui->ToolBarMain->addWidget(btnUnSelectCurve);
+    ui->ToolBarMain->addSeparator();
+    ui->ToolBarMain->addWidget(ToolBarLabel);
+
     ui->LayoutCanvas->addWidget(canvas);
+
 
     btnCancelCurve->setEnabled(false);
     btnDeleteCurve->setEnabled(false);
+    btnUnSelectCurve->setEnabled(false);
 
     ui->PenStyleComboBox->addItem("Qt::SolidLine");
     ui->PenStyleComboBox->addItem("Qt::DashLine");
@@ -79,20 +88,24 @@ void MainWindow::SetupComponents(){
 }
 
 void MainWindow::interfaceUpdate(void){
+    ui->IssueLabel->setText("");
     canvas->interfaceUpdate();    
 }
 
 void MainWindow::clickBtnBezier(){
+    ToolBarLabel->setText("You choise Bezier");
     btnCancelCurve->setEnabled(true);
     canvas->setTypeCurve(BEZIER);    
 }
 
 void MainWindow::clickBtnHermite(){
+    ToolBarLabel->setText("You choise Hermite");
     btnCancelCurve->setEnabled(true);
     canvas->setTypeCurve(HERMITE);
 }
 
 void MainWindow::clickBtnCancelCurve(){
+    ToolBarLabel->setText(" ");
     canvas->setTypeCurve(NOCURVE);
     canvas->resetCurve();
     btnCancelCurve->setEnabled(false);
@@ -236,19 +249,18 @@ void MainWindow::accept(){
     }
     else if(canvas->getTypeCurve() != NOCURVE){
         Curve *curve = new Curve(canvas->getTypeCurve(),Pen);
-        if(canvas->getTypeCurve() == BEZIER){
-            curve->setPT0(pointList[0]);
-            curve->setPT1(pointList[1]);
-            curve->setPT2(pointList[2]);
-            curve->setPT3(pointList[3]);
+        curve->ptControl.append(pointList[0]);
+        if(canvas->getTypeCurve() == BEZIER){            
+            curve->ptControl.append(pointList[1]);
+            curve->ptControl.append(pointList[2]);
         }else if(canvas->getTypeCurve() == HERMITE){
-            curve->setPT0(pointList[0]);
-            curve->setPT1(pointList[2]);
-            curve->setPT2(pointList[1]);
-            curve->setPT3(pointList[3]);
+            curve->ptControl.append(pointList[1]);
+            curve->ptControl.append(pointList[2]);
         }
+        curve->ptControl.append(pointList[3]);
+        canvas->addCurve(*curve);
     }else{
-        ui->IssueLabel->setText("ERROR: Any operation invalid");
+        ui->IssueLabel->setText("ERROR: Any operation invalid\nYou choise a type of curve?");
         return;
     }
 
@@ -256,3 +268,6 @@ void MainWindow::accept(){
     canvas->interfaceUpdate();
 }
 
+void MainWindow::unselectcurve(){
+    canvas->UnSelectCurve();
+}

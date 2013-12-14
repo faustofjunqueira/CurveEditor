@@ -162,15 +162,15 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="page1">
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>221</width>
-       <height>67</height>
+       <width>98</width>
+       <height>28</height>
       </rect>
      </property>
      <attribute name="label">
@@ -229,8 +229,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>221</width>
-       <height>67</height>
+       <width>103</width>
+       <height>45</height>
       </rect>
      </property>
      <attribute name="label">
@@ -610,7 +610,7 @@
       <x>1030</x>
       <y>410</y>
       <width>231</width>
-      <height>17</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">

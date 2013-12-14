@@ -9,7 +9,7 @@
 #include "algorithms.h"
 #include "canvascore.h"
 
-MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
+MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QPushButton *btnUnselectCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
                    QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
                    QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4)
 {
@@ -31,6 +31,8 @@ MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p
     this->Label4 = label4;
 
     this->btnDeleteCurve = btnDeleteCurve;
+    this->btnUnselectCurve = btnUnselectCurve;
+
     FirstPointSelected = false;
     lockMoveControlPoint = true;
     lockMoveCurve = true;
@@ -56,7 +58,6 @@ MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p
 
 }
 
-//Quando eu arrasto o mouse
 void MyCanvas::mouseMoveEvent ( QMouseEvent * event ){
     if(typeCurve != NOCURVE)
         return;
@@ -229,6 +230,7 @@ Curve *MyCanvas::SelectCurve(Curve *c){
         UnSelectCurve();
         SelectedCurve = c;
         btnDeleteCurve->setEnabled(true);
+        btnUnselectCurve->setEnabled(true);
         if(c->getCurveType() == BEZIER){
             TypeCurveField->setText("Bezier");
             Label3->setText("P3");
@@ -277,6 +279,7 @@ Curve *MyCanvas::SelectCurve(Curve *c){
 }
 
 void MyCanvas::UnSelectCurve(){
+    btnUnselectCurve->setEnabled(false);
     TypeCurveField->setText("");
     Label3->setText("P3");
     Label4->setText("P4");

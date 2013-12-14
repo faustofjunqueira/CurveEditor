@@ -30,6 +30,7 @@ private slots:
     void clickDeleteCurve();
     void clickStyle();
     void accept();
+    void unselectcurve();
 //    void OpenFileAct();
 //    void SaveFileAct();
 //    void ExitFileAct();
@@ -44,7 +45,9 @@ private:
         *btnBezier,
         *btnHermite,
         *btnCancelCurve,
-        *btnDeleteCurve;
+        *btnDeleteCurve,
+        *btnUnSelectCurve;
+    QLabel *ToolBarLabel;
     QMenu *FileMenu;
     //QAction *openAct, *saveAct, *exitAct, *exportAct;
     MyCanvas *canvas;

@@ -17,12 +17,13 @@ class MyCanvas: public QLabel
 
 public:    
     Curve *SelectedCurve;
-    MyCanvas(QPushButton *btnDeleteCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
+    MyCanvas(QPushButton *btnDeleteCurve,QPushButton *btnUnselectCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
              QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
              QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4);
-    void mouseMoveEvent ( QMouseEvent * event );
-    void mousePressEvent(QMouseEvent *event);
+
     unsigned int getNCurves();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
     void resetCurve();
     void setTypeCurve(char typeCurve);
     char getTypeCurve();
@@ -31,6 +32,8 @@ public:
     void setPen(QPen p);
     void addCurve(Curve c);
     void renderAllCurve(bool drawMesh);
+    void UnSelectCurve();
+
 private:
     QTextEdit *p0x_field,
               *p0y_field,
@@ -62,9 +65,8 @@ private:
     QPoint *SelectedControlPoint;
     bool lockMoveControlPoint;
     bool lockMoveCurve;
-    QPushButton *btnDeleteCurve;
+    QPushButton *btnDeleteCurve, *btnUnselectCurve;
 
-    void UnSelectCurve();
     Curve *SelectCurve(unsigned int i);
     Curve *SelectCurve(Curve *c);
     Curve *SelectCurve(CanvasPoint p);
