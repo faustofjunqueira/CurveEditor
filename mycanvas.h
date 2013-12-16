@@ -21,6 +21,9 @@ public:
              QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
              QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4);
 
+    QList<Curve> CurveList;
+    QImage CanvasBufferImage;
+    void clearCurveList();
     unsigned int getNCurves();
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -33,6 +36,7 @@ public:
     void addCurve(Curve c);
     void renderAllCurve(bool drawMesh);
     void UnSelectCurve();
+    void copyCurve(QList<Curve> L);
 
 private:
     QTextEdit *p0x_field,
@@ -48,15 +52,14 @@ private:
     QLabel *TypeCurveField, *Label3, *Label4;
     QComboBox *PenCapField, *PenStyleField;
 
-    QList<Curve> CurveList;
+
     CanvasPoint LastClickedPoint;
     CanvasPoint LastMovedPoint;
     CanvasPoint MovingPoint;
     CanvasPoint ClickedPoint;
     bool FirstPointSelected;
 
-    char typeCurve;
-    QImage CanvasBufferImage;
+    char typeCurve;    
     CanvasPoint *BufferPoints; // pontos que estao no buffer
     QColor bgColor;
     QPen PenDrawLine; // Cor da linha confiracao
@@ -73,7 +76,7 @@ private:
 
     void clearImage();
     void renderBezier();
-    void renderHermite();
+    void renderHermite();    
 
 };
 

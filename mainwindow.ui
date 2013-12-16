@@ -247,8 +247,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>221</width>
-       <height>67</height>
+       <width>98</width>
+       <height>28</height>
       </rect>
      </property>
      <attribute name="label">
@@ -642,6 +642,7 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

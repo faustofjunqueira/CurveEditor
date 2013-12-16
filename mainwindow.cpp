@@ -1,10 +1,12 @@
 #include <QColor>
 #include <QToolButton>
 #include <QPainter>
+#include <QFileDialog>
+#include <QImageWriter>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "myfile.h"
 
 #include "curve.h"
 
@@ -24,11 +26,13 @@ MainWindow::MainWindow(QWidget *parent) :
     btnDeleteCurve = new QPushButton("X");
     btnUnSelectCurve = new QPushButton("Unselect curve");
     ToolBarLabel = new QLabel;
-
+    isSaved = false;
+    FileName = "";
     canvas = new MyCanvas(btnDeleteCurve,btnUnSelectCurve,ui->CurveXTextEdit,ui->CurveYTextEdit,ui->CurveXTextEdit_2,ui->CurveYTextEdit_2,ui->CurveXTextEdit_3,ui->CurveYTextEdit_3,
                           ui->CurveXTextEdit_4,ui->CurveYTextEdit_4,ui->ColorField,ui->WidthField,ui->TypeCurveLabel,ui->CapStyleComboBox,ui->PenStyleComboBox,
                           ui->Label3,ui->Label4);
     StyleWindow.setCanvas(canvas);
+
     this->SetupComponents();
 }
 
@@ -38,6 +42,8 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::SetupComponents(){
+
+    TitleAplication = "Curve Editor";
 
     connect(btnBezier,SIGNAL(clicked()),this,SLOT(clickBtnBezier()));
     connect(btnHermite,SIGNAL(clicked()),this,SLOT(clickBtnHermite()));
@@ -84,12 +90,17 @@ void MainWindow::SetupComponents(){
 
     ui->WidthField->setText("1");
 
+    createAction();
+    createMenu();
+
     this->interfaceUpdate();
 }
 
 void MainWindow::interfaceUpdate(void){
     ui->IssueLabel->setText("");
-    canvas->interfaceUpdate();    
+    canvas->interfaceUpdate();
+    this->setWindowTitle(TitleAplication+" - "+FileName);
+
 }
 
 void MainWindow::clickBtnBezier(){
@@ -115,6 +126,7 @@ void MainWindow::clickBtnCancelCurve(){
 void MainWindow::clickDeleteCurve(){
     canvas->deleteSelectedCurve();
     btnDeleteCurve->setEnabled(false);
+    btnUnSelectCurve->setEnabled(false);
     interfaceUpdate();
 }
 
@@ -270,4 +282,100 @@ void MainWindow::accept(){
 
 void MainWindow::unselectcurve(){
     canvas->UnSelectCurve();
+    canvas->resetCurve();
+    canvas->interfaceUpdate();
+}
+
+void MainWindow::createAction(){
+    openAct = new QAction(this);
+    openAct->setText("Open");
+    openAct->setShortcuts(QKeySequence::Open);
+    openAct->setStatusTip(tr("Open a file"));
+    connect(openAct, SIGNAL(triggered()), this, SLOT(OpenFileAct()));
+
+    saveAct = new QAction(this);
+    saveAct->setText("Save");
+    saveAct->setShortcuts(QKeySequence::Save);
+    saveAct->setStatusTip(tr("Save a file"));
+    connect(saveAct, SIGNAL(triggered()), this, SLOT(SaveFileAct()));
+
+    exitAct = new QAction(this);
+    exitAct->setText("Exit");
+    exitAct->setStatusTip(tr("Exit"));
+    connect(exitAct, SIGNAL(triggered()), this, SLOT(ExitFileAct()));
+
+    exportAct = new QAction(this);
+    exportAct->setText("Export");
+    exportAct->setStatusTip(tr("Export in .png"));
+    connect(exportAct, SIGNAL(triggered()), this, SLOT(exportImageAct()));
+
+    newAct = new QAction(this);
+    newAct->setText("New");
+    newAct->setShortcuts(QKeySequence::New);
+    newAct->setStatusTip(tr("New file"));
+    connect(newAct, SIGNAL(triggered()), this, SLOT(NewFileAct()));
+}
+
+void MainWindow::createMenu(){
+    FileMenu->addAction(newAct);
+    FileMenu->addAction(openAct);
+    FileMenu->addAction(saveAct);
+    FileMenu->addSeparator();
+    FileMenu->addAction(exportAct);
+    FileMenu->addSeparator();
+    FileMenu->addAction(exitAct);
+}
+
+void MainWindow::OpenFileAct(){
+    QString fileName = QFileDialog::getOpenFileName(this,
+             tr("Open file..."), "",
+             tr("All Files (*)"));
+
+    QList<Curve> curves = openFile(fileName);
+    NewFileAct();
+    canvas->copyCurve(curves);
+    canvas->resetCurve();
+    FileName = fileName;
+    isSaved = true;
+    canvas->interfaceUpdate();    
+}
+
+void MainWindow::SaveFileAct(){
+    QString fileName;
+    if(!isSaved)
+        fileName = QFileDialog::getSaveFileName(this,
+                 tr("Save file..."), "",
+                 tr("All Files (*)"));
+    else
+        fileName = FileName;
+
+    saveFile(canvas->CurveList,fileName);
+    FileName = fileName;
+    isSaved = true;
+    interfaceUpdate();
+}
+
+void MainWindow::ExitFileAct(){
+    this->hide();
+}
+
+void MainWindow::exportImageAct(){
+    QString fileName = QFileDialog::getSaveFileName(this,
+             tr("Export to png..."), "",
+             tr(".png(*.png)"));
+    canvas->UnSelectCurve();
+    QImageWriter *imageWriter = new QImageWriter;
+    imageWriter->setFileName(fileName);
+    imageWriter->setFormat("png");
+    imageWriter->setQuality(100);
+    imageWriter->write(canvas->CanvasBufferImage);
+}
+
+void MainWindow::NewFileAct(){
+    canvas->clearCurveList();
+    canvas->resetCurve();
+    FileName = "";
+    isSaved = false;
+    canvas->interfaceUpdate();
+    interfaceUpdate();
 }

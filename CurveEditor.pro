@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     curve.cpp \
     mycanvas.cpp \
     canvascore.cpp \
-    styledialog.cpp
+    styledialog.cpp \
+    myfile.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -26,7 +27,8 @@ HEADERS  += \
     curve.h \
     mycanvas.h \
     canvascore.h \
-    styledialog.h
+    styledialog.h \
+    myfile.h
 
 FORMS    += \
     mainwindow.ui \

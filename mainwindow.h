@@ -31,13 +31,18 @@ private slots:
     void clickStyle();
     void accept();
     void unselectcurve();
-//    void OpenFileAct();
-//    void SaveFileAct();
-//    void ExitFileAct();
+    void OpenFileAct();
+    void NewFileAct();
+    void SaveFileAct();
+    void exportImageAct();
+    void ExitFileAct();
 
 private:
     Ui::MainWindow *ui;    
 
+    bool isSaved;
+    QString FileName;
+    QString TitleAplication;
     QToolButton
         *btnFile;
     QPushButton
@@ -49,7 +54,7 @@ private:
         *btnUnSelectCurve;
     QLabel *ToolBarLabel;
     QMenu *FileMenu;
-    //QAction *openAct, *saveAct, *exitAct, *exportAct;
+    QAction *openAct, *saveAct, *exitAct, *exportAct, *newAct;
     MyCanvas *canvas;
     QPen Pen;
     QLabel *lbcontrol0,*lbcontrol1,*lbcontrol2,*lbcontrol3;
@@ -57,6 +62,8 @@ private:
     StyleDialog StyleWindow;
     void interfaceUpdate(void);
     void SetupComponents();
+    void createAction();
+    void createMenu();
 
 };
 

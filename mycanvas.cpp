@@ -318,3 +318,15 @@ void MyCanvas::addCurve(Curve c){
     CurveList.append(c);
     SelectCurve(&CurveList.last());
 }
+
+
+void MyCanvas::clearCurveList(){
+    UnSelectCurve();
+    while(!CurveList.isEmpty())
+        CurveList.removeFirst();
+}
+
+void MyCanvas::copyCurve(QList<Curve> L){
+    for(int i = 0; i < L.size(); i++)
+        CurveList.append(L[i]);
+}
