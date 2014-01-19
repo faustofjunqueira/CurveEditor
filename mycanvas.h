@@ -19,7 +19,7 @@ public:
     Curve *SelectedCurve;
     MyCanvas(QPushButton *btnDeleteCurve,QPushButton *btnUnselectCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
              QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
-             QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4);
+             QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4, int *nseg);
 
     QList<Curve> CurveList;
     QImage CanvasBufferImage;
@@ -37,6 +37,7 @@ public:
     void renderAllCurve(bool drawMesh);
     void UnSelectCurve();
     void copyCurve(QList<Curve> L);
+    void SelectedCurveUp();
 
 private:
     QTextEdit *p0x_field,
@@ -58,7 +59,7 @@ private:
     CanvasPoint MovingPoint;
     CanvasPoint ClickedPoint;
     bool FirstPointSelected;
-
+    int *nseg;
     char typeCurve;    
     CanvasPoint *BufferPoints; // pontos que estao no buffer
     QColor bgColor;
@@ -69,9 +70,9 @@ private:
     bool lockMoveControlPoint;
     bool lockMoveCurve;
     QPushButton *btnDeleteCurve, *btnUnselectCurve;
-
+    unsigned int SelectedCurveIndex;
     Curve *SelectCurve(unsigned int i);
-    Curve *SelectCurve(Curve *c);
+    Curve *SelectCurve(Curve *c,unsigned int i);
     Curve *SelectCurve(CanvasPoint p);
 
     void clearImage();

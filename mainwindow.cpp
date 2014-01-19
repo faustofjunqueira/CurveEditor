@@ -28,9 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ToolBarLabel = new QLabel;
     isSaved = false;
     FileName = "";
+    nsegs = 50;
     canvas = new MyCanvas(btnDeleteCurve,btnUnSelectCurve,ui->CurveXTextEdit,ui->CurveYTextEdit,ui->CurveXTextEdit_2,ui->CurveYTextEdit_2,ui->CurveXTextEdit_3,ui->CurveYTextEdit_3,
                           ui->CurveXTextEdit_4,ui->CurveYTextEdit_4,ui->ColorField,ui->WidthField,ui->TypeCurveLabel,ui->CapStyleComboBox,ui->PenStyleComboBox,
-                          ui->Label3,ui->Label4);
+                          ui->Label3,ui->Label4,&nsegs);
     StyleWindow.setCanvas(canvas);
 
     this->SetupComponents();
@@ -45,6 +46,7 @@ void MainWindow::SetupComponents(){
 
     TitleAplication = "Curve Editor";
 
+    connect(ui->btnchangecurvetype, SIGNAL(clicked()),this,SLOT(changeCurve()));
     connect(btnBezier,SIGNAL(clicked()),this,SLOT(clickBtnBezier()));
     connect(btnHermite,SIGNAL(clicked()),this,SLOT(clickBtnHermite()));
     connect(btnCancelCurve,SIGNAL(clicked()),this,SLOT(clickBtnCancelCurve()));
@@ -52,8 +54,12 @@ void MainWindow::SetupComponents(){
     connect(btnPenConfig,SIGNAL(clicked()),this,SLOT(clickStyle()));
     connect(ui->ApplyButton,SIGNAL(clicked()),this,SLOT(accept()));
     connect(btnUnSelectCurve,SIGNAL(clicked()),this,SLOT(unselectcurve()));
+    connect(ui->NSegTxt,SIGNAL(textChanged()),this,SLOT(nsegsRead()));
+    connect(ui->btnUp,SIGNAL(clicked()),this,SLOT(up()));
 
     btnFile->setMenu(FileMenu);
+
+    ui->NSegTxt->setText("50");
 
     //Usar icones nos botoes
     btnFile->setText("File");
@@ -364,6 +370,7 @@ void MainWindow::exportImageAct(){
              tr("Export to png..."), "",
              tr(".png(*.png)"));
     canvas->UnSelectCurve();
+    canvas->resetCurve();
     QImageWriter *imageWriter = new QImageWriter;
     imageWriter->setFileName(fileName);
     imageWriter->setFormat("png");
@@ -378,4 +385,34 @@ void MainWindow::NewFileAct(){
     isSaved = false;
     canvas->interfaceUpdate();
     interfaceUpdate();
+}
+
+void MainWindow::nsegsRead(){
+    bool ok;
+    int txt = ui->NSegTxt->toPlainText().toInt(&ok);
+    if(ok && txt){
+        nsegs = txt;
+    }else if(!txt)
+        ui->NSegTxt->setText(QString::number(nsegs));
+    canvas->resetCurve();
+    canvas->interfaceUpdate();
+    interfaceUpdate();
+}
+
+void MainWindow::changeCurve(){
+    if(canvas->SelectedCurve){
+        canvas->SelectedCurve->setCurveType();
+        canvas->resetCurve();
+        canvas->interfaceUpdate();
+        interfaceUpdate();
+    }
+}
+
+void MainWindow::up(){
+    if(canvas->SelectedCurve){
+        canvas->SelectedCurveUp();
+        canvas->resetCurve();
+        canvas->interfaceUpdate();
+        interfaceUpdate();
+    }
 }

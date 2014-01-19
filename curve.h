@@ -25,7 +25,7 @@ public:
     void setPT1(QPoint pt);
     void setPT2(QPoint pt);
     void setPT3(QPoint pt);
-    void draw(QPainter *painter, bool drawMesh=false);
+    void draw(QPainter *painter, int nseg,bool drawMesh=false);
     double distance(QPoint p);
     QPoint *selectControlPoint(QPoint p);
     bool InMoveRect(QPoint p);
@@ -35,6 +35,7 @@ public:
     void DecrementX(int scalar);
     void DecrementY(int scalar);
     void setPen(QPen pen);
+    void setCurveType();
 private:
 
     char curve;

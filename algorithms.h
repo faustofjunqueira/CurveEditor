@@ -136,4 +136,6 @@ void DrawCircleInCurve(QPainter *painter,QPoint p0,QPoint p1,QPoint p2,QPoint p3
 
 QPoint oposto(QPoint centro, QPoint ponto);
 
+void drawConvexLine(QPainter *painter, QList<QPoint> pt);
+
 #endif // ALGORITHMS_H

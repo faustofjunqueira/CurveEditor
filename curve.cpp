@@ -67,13 +67,13 @@ double Curve::distance(QPoint p){
 
 
 
-void Curve::draw(QPainter *painter, bool drawMesh){
+void Curve::draw(QPainter *painter, int nseg, bool drawMesh){
     QPen penOrig = painter->pen();
     painter->setPen(pen);
     if(curve == HERMITE)
-        AlgorithmHermite(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
+        AlgorithmHermite(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh,nseg);
     else if(curve == BEZIER)
-        AlgorithmBezier(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh);
+        AlgorithmBezier(painter,ptControl[0],ptControl[1],ptControl[2],ptControl[3],drawMesh,nseg);
 
     painter->setPen(penOrig);
 
@@ -121,4 +121,19 @@ void Curve::DecrementY(int scalar){
 
 void Curve::setPen(QPen pen){
     this->pen = pen;
+}
+
+void Curve::setCurveType(){
+    if(curve == HERMITE){
+        ptControl.swap(1,3);
+        ptControl.swap(2,3);
+        curve = BEZIER;
+    }else{
+        QPoint t1 = ptControl[1] - ptControl[0];
+        QPoint t2 = ptControl[3] - ptControl[2];
+        ptControl.swap(1,3);
+        ptControl[2] = t1;
+        ptControl[3] = t2;
+        curve = HERMITE;
+    }
 }

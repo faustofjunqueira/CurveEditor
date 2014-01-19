@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = 0);
+    int nsegs;
     ~MainWindow();
 
 private slots:
@@ -36,6 +37,9 @@ private slots:
     void SaveFileAct();
     void exportImageAct();
     void ExitFileAct();
+    void changeCurve();
+    void nsegsRead();
+    void up();
 
 private:
     Ui::MainWindow *ui;    

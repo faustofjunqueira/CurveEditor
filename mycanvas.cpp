@@ -11,9 +11,10 @@
 
 MyCanvas::MyCanvas(QPushButton *btnDeleteCurve,QPushButton *btnUnselectCurve,QTextEdit *p0x_field,QTextEdit *p0y_field,QTextEdit *p1x_field,QTextEdit *p1y_field,
                    QTextEdit *p2x_field,QTextEdit *p2y_field,QTextEdit *p3x_field,QTextEdit *p3y_field,QTextEdit *rgba_field,
-                   QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4)
+                   QTextEdit *width_field, QLabel *TypeCurveField, QComboBox *PenCapField,QComboBox *PenStyleField,QLabel *label3,QLabel *label4, int *nseg)
 {
     CanvasCoreInit();
+    this->nseg = nseg;
     this->p0x_field = p0x_field;
     this->p0y_field = p0y_field;
     this->p1x_field = p1x_field;
@@ -123,7 +124,7 @@ void MyCanvas::renderBezier(){
         CurveList.last().ptControl.append(QPoint(BufferPoints[1].x,BufferPoints[1].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[2].x,BufferPoints[2].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[3].x,BufferPoints[3].y));
-        SelectCurve(&CurveList.last());
+        SelectCurve(&CurveList.last(),CurveList.size()-1);
         resetCurve();
         return;
     }
@@ -146,7 +147,7 @@ void MyCanvas::renderHermite(){
         CurveList.last().ptControl.append(QPoint(BufferPoints[2].x,BufferPoints[2].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[1].x,BufferPoints[1].y));
         CurveList.last().ptControl.append(QPoint(BufferPoints[3].x,BufferPoints[3].y));
-        SelectCurve(&CurveList.last());
+        SelectCurve(&CurveList.last(),CurveList.size()-1);
         resetCurve();
         return;
     }
@@ -160,7 +161,7 @@ void MyCanvas::resetCurve(){
     clearImage();
     renderAllCurve(false);
     if(SelectedCurve)
-        SelectedCurve->draw(&painter,true);
+        SelectedCurve->draw(&painter,*nseg,true);
     CanvasBufferReset();
 }
 
@@ -170,7 +171,7 @@ unsigned int MyCanvas::getNCurves(){
 
 void MyCanvas::interfaceUpdate(void){
     this->setPixmap(QPixmap::fromImage(CanvasBufferImage));
-    SelectCurve(SelectedCurve);
+    SelectCurve(SelectedCurve,SelectedCurveIndex);
     update();
 }
 
@@ -200,11 +201,20 @@ Curve *MyCanvas::SelectCurve(CanvasPoint p){
 
 void MyCanvas::renderAllCurve(bool drawMesh){
     for(int i = 0; i < CurveList.size(); i++)
-        CurveList[i].draw(&painter,drawMesh);
+        CurveList[i].draw(&painter,*nseg,drawMesh);
 }
 
 void MyCanvas::clearImage(){
     CanvasBufferImage.fill(bgColor);
+}
+
+void MyCanvas::SelectedCurveUp(){
+    if(SelectedCurve){
+        Curve c = *SelectedCurve;
+        CurveList.removeAt(SelectedCurveIndex);
+        CurveList.append(c);
+        SelectCurve(&CurveList.last(),CurveList.size()-1);
+    }
 }
 
 void MyCanvas::setTypeCurve(char typeCurve){
@@ -218,17 +228,18 @@ char MyCanvas::getTypeCurve(){
 Curve *MyCanvas::SelectCurve(unsigned int i){
     UnSelectCurve();
     if((int)i < CurveList.size())
-        SelectCurve(&CurveList[i]);
+        SelectCurve(&CurveList[i],i);
 
     return SelectedCurve;
 }
 
-Curve *MyCanvas::SelectCurve(Curve *c){
+Curve *MyCanvas::SelectCurve(Curve *c,unsigned int i){
     if(c == NULL)
         return NULL;
     else{
         UnSelectCurve();
         SelectedCurve = c;
+        SelectedCurveIndex = i;
         btnDeleteCurve->setEnabled(true);
         btnUnselectCurve->setEnabled(true);
         if(c->getCurveType() == BEZIER){
@@ -316,7 +327,7 @@ void MyCanvas::setPen(QPen p){
 
 void MyCanvas::addCurve(Curve c){
     CurveList.append(c);
-    SelectCurve(&CurveList.last());
+    SelectCurve(&CurveList.last(),CurveList.size()-1);
 }
 
 

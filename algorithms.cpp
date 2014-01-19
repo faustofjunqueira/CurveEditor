@@ -5,8 +5,8 @@ QPen penBack(QColor(59,59,59));
 
 /** ----------PROBLEMA----------- **/
 void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2){
-    int slope;
-    int dx, dy, incE, incNE, d, x, y;
+    int dx, dy, x, y;
+    float a,b;
     // Onde inverte a linha x1 > x2
     if (p1.x() > p2.x()){
         AlgorithmBresenham(painter, p2, p1);
@@ -14,30 +14,43 @@ void AlgorithmBresenham(QPainter *painter, QPoint p1, QPoint p2){
     }
     dx = p2.x() - p1.x();
     dy = p2.y() - p1.y();
+    a=(float)dy/(float)dx;
+    b=(float)p1.y()-a*p1.x();
 
-    if (dy < 0){
-        slope = -1;
-        dy = -dy;
-    }
-    else{
-       slope = 1;
-    }
-    // Constante de Bresenham
-    incE = 2 * dy;
-    incNE = 2 * dy - 2 * dx;
-    d = 2 * dy - dx;
-    y = p1.y();
-    for (x = p1.x(); x <= p2.x(); x++){
-        painter->drawPoint(x, y); // Uso o drawPoint para utilizar a Pen
-        if (d <= 0){
-          d += incE;
+
+    //Compara qual lado escolhe
+    if(abs(dx)>abs(dy))
+    {
+        //Caso X
+        for (x = p1.x(); x <= p2.x(); x++){
+             y=a*x+b;
+             painter->drawPoint(x, y); // Uso o drawPoint para utilizar a Pen
+
         }
-        else{
-          d += incNE;
-          y += slope;
+    }
+    else
+    {
+        //Caso Y
+        if(dy>0)
+        {
+            //Caso Subindo
+            for (y = p1.y(); y <= p2.y(); y++){
+               x=(y-b)/a;
+               painter->drawPoint(x, y); // Uso o drawPoint para utilizar a Pen
+
+            }
+        }
+        else
+        {
+            //Caso Descendo
+            for (y = p2.y(); y <= p1.y(); y++){
+               x=(y-b)/a;
+               painter->drawPoint(x, y); // Uso o drawPoint para utilizar a Pen
+            }
         }
     }
     return;
+
 }
 
 void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoint pc3, bool drawMesh, unsigned int nsteps){
@@ -49,6 +62,12 @@ void AlgorithmBezier(QPainter *painter, QPoint pc0, QPoint pc1, QPoint pc2, QPoi
         painter->drawLine(pc2,pc1);
         painter->drawLine(pc2,pc3);
         DrawCircleInCurve(painter,pc0,pc1,pc2,pc3);
+        QList<QPoint> list;
+        list.append(pc0);
+        list.append(pc1);
+        list.append(pc2);
+        list.append(pc3);
+        //drawConvexLine(painter,list);
         DrawRectMoveOfCurve(painter,pc0,pc1,pc2,pc3);
     }
 
@@ -342,3 +361,51 @@ QPoint oposto(QPoint centro, QPoint ponto){
     y += centro.y();
     return QPoint(x,y);
 }
+
+void drawConvexLine(QPainter *painter, QList<QPoint> pt){
+
+    int MaxXIndex,MinXIndex,MaxYIndex,MinYIndex;
+
+    MaxXIndex = 0;
+    for(int i = 1; i < pt.size(); i++){
+        if(pt[MaxXIndex].x() < pt[i].x())
+            MaxXIndex = i;
+    }
+
+    for(int i = 0; i < pt.size(); i++)
+        if(i != MaxXIndex){
+            MinYIndex = i;
+            break;
+        }
+
+    for(int i = 0; i < pt.size(); i++)
+        if(i != MinYIndex && i != MaxXIndex && pt[MinYIndex].y() > pt[i].y())
+            MinYIndex = i;
+
+    for(int i = 0; i < pt.size(); i++)
+        if(i != MinYIndex && i != MaxXIndex){
+            MaxYIndex = i;
+            break;
+        }
+
+    for(int i = 0; i < pt.size(); i++)
+        if(i != MinYIndex && i != MaxXIndex && i != MaxYIndex && pt[MaxYIndex].y() < pt[i].y())
+            MaxYIndex = i;
+
+    for(int i = 0; i < pt.size(); i++)
+        if(i != MinYIndex && i != MaxXIndex && i != MaxYIndex && i != MaxYIndex){
+            MinXIndex = i;
+            break;
+        }
+
+    QPen orig = painter->pen();
+    QPen pen(orig);
+    pen.setWidth(4);
+    painter->setPen(pen);
+    painter->drawLine(pt[MaxXIndex],pt[MinYIndex]);
+    painter->drawLine(pt[MaxXIndex],pt[MaxYIndex]);
+    painter->drawLine(pt[MinXIndex],pt[MinYIndex]);
+    painter->drawLine(pt[MinXIndex],pt[MaxYIndex]);
+    painter->setPen(orig);
+}
+
